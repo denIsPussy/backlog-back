@@ -30,7 +30,7 @@ public class SecurityConfiguration {
     public UserDetailsService userDetailsService() {
         return new UserService();
     }
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
