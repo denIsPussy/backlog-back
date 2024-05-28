@@ -11,9 +11,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Разрешаем CORS для всех путей
-                .allowedOrigins("https://denispussy-backlog-front-d691.twc1.net")
-                .allowedOrigins("https://backlogshop.ru")
-                .allowedOrigins("http://localhost:3000") // Разрешаем запросы с этого домена
+                .allowedOrigins(
+                        "https://denispussy-backlog-front-d691.twc1.net",
+                        "http://localhost:3000",
+                        "https://backlogshop.ru" // Добавлен новый разрешенный источник
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Разрешаем методы
                 .allowedHeaders("*") // Разрешаем все заголовки
                 .allowCredentials(true); // Разрешаем отправку куки с запросом
