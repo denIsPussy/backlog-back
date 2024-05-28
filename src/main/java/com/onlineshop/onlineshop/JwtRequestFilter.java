@@ -47,11 +47,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
-        response.setHeader("Access-Control-Allow-Origin", "*"); // Разрешаем доступ для всех доменов
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT"); // Указываем разрешенные методы
-        response.setHeader("Access-Control-Max-Age", "3600"); // Максимальное время кэширования предзапроса
-        response.setHeader("Access-Control-Allow-Headers", "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN"); // Указываем разрешенные заголовки
-        response.setHeader("Access-Control-Allow-Credentials", "true"); // Разрешаем отправку куки с запросом
         chain.doFilter(request, response);
     }
 }
