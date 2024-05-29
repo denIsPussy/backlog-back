@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Разрешаем CORS для всех путей
-                .allowedOrigins("http://backlogshop.ru:3000", "https://backlogshop.ru:3000")
+                .allowedOrigins("http://backlogshop.ru", "https://backlogshop.ru", "http://185.200.241.178")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
