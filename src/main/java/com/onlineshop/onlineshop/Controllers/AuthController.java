@@ -2,6 +2,7 @@ package com.onlineshop.onlineshop.Controllers;
 
 import com.onlineshop.onlineshop.ApiService;
 import com.onlineshop.onlineshop.JwtUtil;
+import com.onlineshop.onlineshop.Models.DTO.SilentAuthDTO;
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
 import com.onlineshop.onlineshop.Models.TwoFactorCodeDTO;
 import com.onlineshop.onlineshop.Models.vk.vkProfileInfo;
@@ -43,8 +44,8 @@ public class AuthController {
     }
 
     @PostMapping("/exchangeSilentAuthToken")
-    public Mono<ResponseEntity<vkProfileInfoDTO>> exchangeSilentAuthToken(@RequestParam String silentToken, @RequestParam String uuid) {
-        return authService.exchangeAndRetrieveProfile(silentToken, uuid)
+    public Mono<ResponseEntity<vkProfileInfoDTO>> exchangeSilentAuthToken(@RequestBody SilentAuthDTO silentAuthDTO) {
+        return authService.exchangeAndRetrieveProfile(silentAuthDTO.getSilentToken(), silentAuthDTO.getUuid())
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.badRequest().body(null));
     }
