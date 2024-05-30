@@ -1,9 +1,5 @@
 package com.onlineshop.onlineshop.Services;
 
-import com.onlineshop.onlineshop.ApiService;
-import com.onlineshop.onlineshop.Controllers.AuthRequest;
-import com.onlineshop.onlineshop.Controllers.AuthResponse;
-import com.onlineshop.onlineshop.JwtUtil;
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
 import com.onlineshop.onlineshop.Models.Order;
 import com.onlineshop.onlineshop.Models.ShoppingCart;
@@ -12,7 +8,6 @@ import com.onlineshop.onlineshop.Repositories.UserRepository;
 import com.onlineshop.onlineshop.Models.vk.VkApiResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -95,7 +90,7 @@ public class UserService implements UserDetailsService {
     public String register(VkApiResponse vkApiResponse){
         try{
             User user = new User();
-            user.setVkId(vkApiResponse.getUserId());
+            user.setVkId(vkApiResponse.getResponse().getUserId());
             userRepository.save(user);
             return "Регистрация прошла успешно";
         }
@@ -187,5 +182,15 @@ public class UserService implements UserDetailsService {
     }
 
     public void decryptingPassword(String password){
+    }
+
+    public User getByVkId(int vkId) {
+        try{
+            Optional<User> optUser = userRepository.findByVkId(vkId);
+            return optUser.orElseThrow();
+        }
+        catch (Exception e){
+            return null;
+        }
     }
 }

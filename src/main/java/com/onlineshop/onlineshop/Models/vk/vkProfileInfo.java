@@ -1,160 +1,81 @@
 package com.onlineshop.onlineshop.Models.vk;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class vkProfileInfo {
-    private String firstName;
-    private String lastName;
-    private String maidenName;
-    private String screenName;
-    private Integer sex;
-    private Integer relation;
-    private User relationPartner;
-    private Integer relationPending;
-    private List<User> relationRequests;
-    private String bdate;
-    private Integer bdateVisibility;
-    private String homeTown;
-    private Country country;
-    private City city;
-    private NameRequest nameRequest;
-    private String status;
-    private String phone;
 
-    public String getFirstName() {
-        return firstName;
+    @JsonProperty("response")
+    private List<UserProfile> response;
+
+    public List<UserProfile> getResponse() {
+        return response;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setResponse(List<UserProfile> response) {
+        this.response = response;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class UserProfile {
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+        @JsonProperty("id")
+        private int id;
 
-    public String getMaidenName() {
-        return maidenName;
-    }
+        @JsonProperty("first_name")
+        private String firstName;
 
-    public void setMaidenName(String maidenName) {
-        this.maidenName = maidenName;
-    }
+        @JsonProperty("last_name")
+        private String lastName;
 
-    public String getScreenName() {
-        return screenName;
-    }
+        @JsonProperty("can_access_closed")
+        private boolean canAccessClosed;
 
-    public void setScreenName(String screenName) {
-        this.screenName = screenName;
-    }
+        @JsonProperty("is_closed")
+        private boolean isClosed;
 
-    public Integer getSex() {
-        return sex;
-    }
+        // Геттеры и сеттеры
 
-    public void setSex(Integer sex) {
-        this.sex = sex;
-    }
+        public int getId() {
+            return id;
+        }
 
-    public Integer getRelation() {
-        return relation;
-    }
+        public void setId(int id) {
+            this.id = id;
+        }
 
-    public void setRelation(Integer relation) {
-        this.relation = relation;
-    }
+        public String getFirstName() {
+            return firstName;
+        }
 
-    public User getRelationPartner() {
-        return relationPartner;
-    }
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
 
-    public void setRelationPartner(User relationPartner) {
-        this.relationPartner = relationPartner;
-    }
+        public String getLastName() {
+            return lastName;
+        }
 
-    public Integer getRelationPending() {
-        return relationPending;
-    }
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
 
-    public void setRelationPending(Integer relationPending) {
-        this.relationPending = relationPending;
-    }
+        public boolean isCanAccessClosed() {
+            return canAccessClosed;
+        }
 
-    public List<User> getRelationRequests() {
-        return relationRequests;
-    }
+        public void setCanAccessClosed(boolean canAccessClosed) {
+            this.canAccessClosed = canAccessClosed;
+        }
 
-    public void setRelationRequests(List<User> relationRequests) {
-        this.relationRequests = relationRequests;
-    }
+        public boolean isClosed() {
+            return isClosed;
+        }
 
-    public String getBdate() {
-        return bdate;
-    }
-
-    public void setBdate(String bdate) {
-        this.bdate = bdate;
-    }
-
-    public Integer getBdateVisibility() {
-        return bdateVisibility;
-    }
-
-    public void setBdateVisibility(Integer bdateVisibility) {
-        this.bdateVisibility = bdateVisibility;
-    }
-
-    public String getHomeTown() {
-        return homeTown;
-    }
-
-    public void setHomeTown(String homeTown) {
-        this.homeTown = homeTown;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
-    }
-
-    public City getCity() {
-        return city;
-    }
-
-    public void setCity(City city) {
-        this.city = city;
-    }
-
-    public NameRequest getNameRequest() {
-        return nameRequest;
-    }
-
-    public void setNameRequest(NameRequest nameRequest) {
-        this.nameRequest = nameRequest;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+        public void setClosed(boolean isClosed) {
+            this.isClosed = isClosed;
+        }
     }
 }
-

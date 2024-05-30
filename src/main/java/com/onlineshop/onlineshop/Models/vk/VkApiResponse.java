@@ -1,100 +1,132 @@
 package com.onlineshop.onlineshop.Models.vk;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class VkApiResponse {
-    @JsonProperty("access_token")
-    private String accessToken;
 
-    @JsonProperty("access_token_id")
-    private String accessTokenId;
+    @JsonProperty("response")
+    private ResponseData response;
 
-    @JsonProperty("user_id")
-    private int userId;
-
-    private String phone;
-
-    @JsonProperty("phone_validated")
-    private long phoneValidated;
-
-    @JsonProperty("is_service")
-    private boolean isService;
-
-    private String email;
-
-    private int source;
-
-    @JsonProperty("source_description")
-    private String sourceDescription;
-
-    public String getAccessToken() {
-        return accessToken;
+    public ResponseData getResponse() {
+        return response;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public void setResponse(ResponseData response) {
+        this.response = response;
     }
 
-    public String getAccessTokenId() {
-        return accessTokenId;
-    }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class ResponseData {
 
-    public void setAccessTokenId(String accessTokenId) {
-        this.accessTokenId = accessTokenId;
-    }
+        @JsonProperty("access_token")
+        private String accessToken;
 
-    public int getUserId() {
-        return userId;
-    }
+        @JsonProperty("access_token_id")
+        private String accessTokenId;
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
+        @JsonProperty("user_id")
+        private int userId;
 
-    public String getPhone() {
-        return phone;
-    }
+        @JsonProperty("additional_signup_required")
+        private boolean additionalSignupRequired;
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+        @JsonProperty("is_partial")
+        private boolean isPartial;
 
-    public long getPhoneValidated() {
-        return phoneValidated;
-    }
+        @JsonProperty("is_service")
+        private boolean isService;
 
-    public void setPhoneValidated(long phoneValidated) {
-        this.phoneValidated = phoneValidated;
-    }
+        private String email;
 
-    public boolean isService() {
-        return isService;
-    }
+        private int source;
 
-    public void setService(boolean service) {
-        isService = service;
-    }
+        @JsonProperty("source_description")
+        private String sourceDescription;
 
-    public String getEmail() {
-        return email;
-    }
+        @JsonProperty("expires_in")
+        private int expiresIn;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
-    public int getSource() {
-        return source;
-    }
 
-    public void setSource(int source) {
-        this.source = source;
-    }
+        public String getAccessToken() {
+            return accessToken;
+        }
 
-    public String getSourceDescription() {
-        return sourceDescription;
-    }
+        public void setAccessToken(String accessToken) {
+            this.accessToken = accessToken;
+        }
 
-    public void setSourceDescription(String sourceDescription) {
-        this.sourceDescription = sourceDescription;
+        public String getAccessTokenId() {
+            return accessTokenId;
+        }
+
+        public void setAccessTokenId(String accessTokenId) {
+            this.accessTokenId = accessTokenId;
+        }
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public void setUserId(int userId) {
+            this.userId = userId;
+        }
+
+        public boolean isAdditionalSignupRequired() {
+            return additionalSignupRequired;
+        }
+
+        public void setAdditionalSignupRequired(boolean additionalSignupRequired) {
+            this.additionalSignupRequired = additionalSignupRequired;
+        }
+
+        public boolean isPartial() {
+            return isPartial;
+        }
+
+        public void setPartial(boolean isPartial) {
+            this.isPartial = isPartial;
+        }
+
+        public boolean isService() {
+            return isService;
+        }
+
+        public void setService(boolean isService) {
+            this.isService = isService;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public int getSource() {
+            return source;
+        }
+
+        public void setSource(int source) {
+            this.source = source;
+        }
+
+        public String getSourceDescription() {
+            return sourceDescription;
+        }
+
+        public void setSourceDescription(String sourceDescription) {
+            this.sourceDescription = sourceDescription;
+        }
+
+        public int getExpiresIn() {
+            return expiresIn;
+        }
+
+        public void setExpiresIn(int expiresIn) {
+            this.expiresIn = expiresIn;
+        }
     }
 }

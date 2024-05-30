@@ -5,7 +5,6 @@ import com.onlineshop.onlineshop.Controllers.AuthResponse;
 import com.onlineshop.onlineshop.JwtUtil;
 import com.onlineshop.onlineshop.Models.TwoFactorCodeDTO;
 import com.onlineshop.onlineshop.Models.User;
-import com.onlineshop.onlineshop.Models.vk.vkProfileInfo;
 import com.onlineshop.onlineshop.Models.vk.vkProfileInfoDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +12,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
-
+@Component
 @Service
 @Transactional
 public class AuthService{
@@ -33,15 +37,36 @@ public class AuthService{
     private JwtUtil jwtUtil;
     @Autowired
     private ApiService apiService;
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     public Mono<vkProfileInfoDTO> exchangeAndRetrieveProfile(String silentToken, String uuid) {
         return apiService.exchangeSilentAuthToken(silentToken, uuid)
-                .flatMap(vkApiResponse ->
-                        apiService.getProfileInfo(vkApiResponse.getAccessToken())
-                                .map(profileInfo -> {
-                                    return vkProfileInfoDTO.get(profileInfo, vkApiResponse.getUserId());
-                                })
-                );
+                .doOnError(e -> logger.error("Error during exchangeSilentAuthToken: silentToken: {}, uuid: {}", silentToken, uuid, e))
+                .flatMap(vkApiResponse -> {
+                    // Логирование деталей vkApiResponse
+                    logger.info("Received VkApiResponse: AccessToken: {}, UserId: {}",
+                            vkApiResponse.getResponse().getAccessToken(), vkApiResponse.getResponse().getUserId());
+
+                    User user = userService.getByVkId(vkApiResponse.getResponse().getUserId());
+                    if (user != null) return Mono.just(vkProfileInfoDTO.getAuthData(-1, user.getFirstName(), user.getLastName()));
+
+                    // После получения access token, получаем информацию профиля
+                    return apiService.getProfileInfo(vkApiResponse.getResponse().getAccessToken())
+                            .doOnError(e -> logger.error("Error during getProfileInfo: AccessToken: {}", vkApiResponse.getResponse().getAccessToken(), e))
+                            .map(profileInfo -> {
+                                // Логирование полученной информации о профиле пользователя
+                                logger.info("Profile Info: UserId: {}, FirstName: {}",
+                                        vkApiResponse.getResponse().getUserId(), profileInfo.getResponse().get(0).getFirstName());
+
+                                // Формирование DTO и возврат
+                                return vkProfileInfoDTO.getRegisterData(profileInfo, vkApiResponse.getResponse().getUserId());
+                            });
+                })
+                .doOnError(e -> logger.error("Error in exchangeAndRetrieveProfile", e))
+                .onErrorResume(e -> {
+                    // В случае ошибки возвращаем пустой Mono или другой обработчик
+                    return Mono.empty();
+                });
     }
 
     public AuthResponse authenticateUser(AuthRequest request) throws AuthenticationException {

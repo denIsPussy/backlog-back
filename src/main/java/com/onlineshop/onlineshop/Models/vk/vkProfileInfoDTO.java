@@ -1,11 +1,9 @@
 package com.onlineshop.onlineshop.Models.vk;
 
-import java.util.List;
-
 public class vkProfileInfoDTO {
-    private int vkId;
-    private String firstName;
-    private String lastName;
+    private int vkId = 0;
+    private String firstName = null;
+    private String lastName = null;
 
     public vkProfileInfoDTO(int vkId, String firstName, String lastName) {
         this.vkId = vkId;
@@ -13,8 +11,12 @@ public class vkProfileInfoDTO {
         this.lastName = lastName;
     }
 
-    public static vkProfileInfoDTO get(vkProfileInfo vkProfileInfo, int vkId){
-        return new vkProfileInfoDTO(vkId, vkProfileInfo.getFirstName(), vkProfileInfo.getLastName());
+    public static vkProfileInfoDTO getRegisterData(vkProfileInfo vkProfileInfo, int vkId){
+        return new vkProfileInfoDTO(vkId, vkProfileInfo.getResponse().get(0).getFirstName(), vkProfileInfo.getResponse().get(0).getLastName());
+    }
+
+    public static vkProfileInfoDTO getAuthData(int vkId, String firstName, String lastName){
+        return new vkProfileInfoDTO(vkId, firstName, lastName);
     }
 
     public int getVkId() {
