@@ -30,4 +30,8 @@ public class AuthResponse {
     public String getMessage() {
         return message;
     }
+
+    public String getError() {
+        return error;
+    }
 }

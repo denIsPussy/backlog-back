@@ -6,6 +6,7 @@ import com.onlineshop.onlineshop.JwtUtil;
 import com.onlineshop.onlineshop.Models.TwoFactorCodeDTO;
 import com.onlineshop.onlineshop.Models.User;
 import com.onlineshop.onlineshop.Models.vk.vkProfileInfo;
+import com.onlineshop.onlineshop.Models.vk.vkProfileInfoDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,9 +34,14 @@ public class AuthService{
     @Autowired
     private ApiService apiService;
 
-    public Mono<vkProfileInfo> exchangeAndRetrieveProfile(String silentToken, int uuid) {
+    public Mono<vkProfileInfoDTO> exchangeAndRetrieveProfile(String silentToken, int uuid) {
         return apiService.exchangeSilentAuthToken(silentToken, uuid)
-                .flatMap(vkApiResponse -> apiService.getProfileInfo(vkApiResponse.getAccessToken()));
+                .flatMap(vkApiResponse ->
+                        apiService.getProfileInfo(vkApiResponse.getAccessToken())
+                                .map(profileInfo -> {
+                                    return vkProfileInfoDTO.get(profileInfo, vkApiResponse.getUserId());
+                                })
+                );
     }
 
     public AuthResponse authenticateUser(AuthRequest request) throws AuthenticationException {

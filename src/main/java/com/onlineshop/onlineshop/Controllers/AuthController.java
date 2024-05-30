@@ -5,6 +5,7 @@ import com.onlineshop.onlineshop.JwtUtil;
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
 import com.onlineshop.onlineshop.Models.TwoFactorCodeDTO;
 import com.onlineshop.onlineshop.Models.vk.vkProfileInfo;
+import com.onlineshop.onlineshop.Models.vk.vkProfileInfoDTO;
 import com.onlineshop.onlineshop.Services.AuthService;
 import com.onlineshop.onlineshop.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/exchangeSilentAuthToken")
-    public Mono<ResponseEntity<vkProfileInfo>> exchangeSilentAuthToken(@RequestParam String silentToken, @RequestParam int uuid) {
+    public Mono<ResponseEntity<vkProfileInfoDTO>> exchangeSilentAuthToken(@RequestParam String silentToken, @RequestParam int uuid) {
         return authService.exchangeAndRetrieveProfile(silentToken, uuid)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.badRequest().body(null));
