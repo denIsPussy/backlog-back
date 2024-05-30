@@ -1,5 +1,10 @@
 package com.onlineshop.onlineshop.Services;
 
+import com.onlineshop.onlineshop.ApiService;
+import com.onlineshop.onlineshop.Controllers.AuthRequest;
+import com.onlineshop.onlineshop.Controllers.AuthResponse;
+import com.onlineshop.onlineshop.JwtUtil;
+import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
 import com.onlineshop.onlineshop.Models.Order;
 import com.onlineshop.onlineshop.Models.ShoppingCart;
 import com.onlineshop.onlineshop.Models.User;
@@ -7,16 +12,16 @@ import com.onlineshop.onlineshop.Repositories.UserRepository;
 import com.onlineshop.onlineshop.Models.vk.VkApiResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @Transactional
@@ -25,6 +30,64 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private ApiService apiService;
+
+    public String registerUser(SignUpDTO signUpDTO) {
+        User newUser = new User();
+        if (signUpDTO.getVkId() != 0) newUser.setVkId(signUpDTO.getVkId());
+        newUser.setEmail(signUpDTO.getEmail());
+        newUser.setFirstName(signUpDTO.getFirstName());
+        newUser.setLastName(signUpDTO.getLastName());
+        newUser.setPatronymic(signUpDTO.getPatronymic());
+        newUser.setUsername(signUpDTO.getUsername());
+        newUser.setPassword(new BCryptPasswordEncoder().encode(signUpDTO.getPassword()));
+        try{
+            userRepository.save(newUser);
+            return "Регистрация прошла успешно";
+        }
+        catch (Exception e){
+            return "Что-то пошло не так. Попробуйте позже";
+        }
+    }
+
+//    public Mono<vkProfileInfo> exchangeAndRetrieveProfile(String silentToken, int uuid) {
+//        return apiService.exchangeSilentAuthToken(silentToken, uuid)
+//                .flatMap(vkApiResponse -> apiService.getProfileInfo(vkApiResponse.getAccessToken()));
+//    }
+
+    private AuthResponse authenticateAfterRegistration(SignUpDTO signUpDTO) {
+        AuthRequest request = new AuthRequest(signUpDTO.getUsername(), signUpDTO.getPassword());
+        return authService.authenticateUser(request);
+    }
+
+//    public AuthenticationResponse authenticateUser(AuthenticationRequest request) throws AuthenticationException {
+//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+//        final User user = getByUsername(request.getUsername());
+//        if (user.isTwoFactorEnabled()) {
+//            generateAndSend2FACode(user.getUsername());
+//            return new AuthenticationResponse(null, "2FA code sent to your email. Please verify to complete login.");
+//        }
+//        final UserDetails userDetails = loadUserByUsername(user.getUsername());
+//        final String jwt = jwtUtil.generateToken(userDetails);
+//        return new AuthenticationResponse(jwt, null);
+//    }
+//
+//    public String validateAndGenerateJwt(TwoFactorCodeDTO twoFactorCodeDTO) {
+//        User user = getByUsername(twoFactorCodeDTO.getUsername());
+//        if (verify2FACode(twoFactorCodeDTO.getCode(), user)) {
+//            UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
+//            return jwtUtil.generateToken(userDetails);
+//        } else {
+//            return "Invalid 2FA code";
+//        }
+//    }
 
     public String create(User user){
         try{
@@ -47,7 +110,6 @@ public class UserService implements UserDetailsService {
             return "Что-то пошло не так. Попробуйте позже";
         }
     }
-
 
     public ShoppingCart getShopCartByUsername(String username){
         try{
@@ -72,16 +134,6 @@ public class UserService implements UserDetailsService {
     }
 
     public String update(User user){
-//        try{
-//            User updatedUser = userRepository.findByUsername(user.getUsername());
-//            if (updatedUser == null) return "Пользователь не найден";
-//            updatedUser.update(user);
-//            userRepository.save(updatedUser);
-//            return "Данные пользователя успешно обновлены";
-//        }
-//        catch (Exception e){
-//            return "Что-то пошло не так. Попробуйте позже";
-//        }
         return "";
     }
 
@@ -100,17 +152,28 @@ public class UserService implements UserDetailsService {
     }
 
     public String authorization(String login, String password){
-//        try{
-//            Optional<User> optUser = userRepository.findByUsername(login);
-//
-//            if (findUser == null) return "Пользователь не найден";
-//            else if (findUser.getPassword().equals(password)) return "Авторизация прошла успешно";
-//            return "Неверные данные";
-//        }
-//        catch (Exception e){
-//            return "Что-то пошло не так. Попробуйте позже";
-//        }
         return "";
+    }
+
+//    public boolean verify2FACode(String code, User user){
+//        return user.getTwoFactorCode().equals(code) &&
+//                user.getTwoFactorExpiration().isAfter(LocalDateTime.now());
+//    }
+//
+//    public void generateAndSend2FACode(String username) {
+//        String code = String.format("%06d", new Random().nextInt(999999));
+//        User findUser = getByUsername(username);
+//        findUser.setTwoFactorCode(code);
+//        findUser.setTwoFactorExpiration(LocalDateTime.now().plusMinutes(10));
+//        update(findUser);
+//        emailService.sendSimpleMessage(findUser.getEmail(), "Your 2FA Code", "Your code is: " + code);
+//    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
     }
 
     public void addBonuses(User user, int bonus){
@@ -131,27 +194,5 @@ public class UserService implements UserDetailsService {
     }
 
     public void decryptingPassword(String password){
-    }
-
-    public boolean verify2FACode(String code, User user){
-        return user.getTwoFactorCode().equals(code) &&
-                user.getTwoFactorExpiration().isAfter(LocalDateTime.now());
-    }
-
-    public void generateAndSend2FACode(String username) {
-        String code = String.format("%06d", new Random().nextInt(999999));
-        User findUser = getByUsername(username);
-        findUser.setTwoFactorCode(code);
-        findUser.setTwoFactorExpiration(LocalDateTime.now().plusMinutes(10));
-        update(findUser);
-        emailService.sendSimpleMessage(findUser.getEmail(), "Your 2FA Code", "Your code is: " + code);
-    }
-
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
     }
 }

@@ -1,13 +1,13 @@
 package com.onlineshop.onlineshop.Controllers;
 
-public class AuthenticationRequest {
+public class AuthRequest {
     private String username;
     private String password;
 
-    public AuthenticationRequest() {
+    public AuthRequest() {
     }
 
-    public AuthenticationRequest(String username, String password) {
+    public AuthRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }
