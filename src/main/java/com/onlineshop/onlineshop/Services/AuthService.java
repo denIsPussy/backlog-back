@@ -34,7 +34,7 @@ public class AuthService{
     @Autowired
     private ApiService apiService;
 
-    public Mono<vkProfileInfoDTO> exchangeAndRetrieveProfile(String silentToken, int uuid) {
+    public Mono<vkProfileInfoDTO> exchangeAndRetrieveProfile(String silentToken, String uuid) {
         return apiService.exchangeSilentAuthToken(silentToken, uuid)
                 .flatMap(vkApiResponse ->
                         apiService.getProfileInfo(vkApiResponse.getAccessToken())

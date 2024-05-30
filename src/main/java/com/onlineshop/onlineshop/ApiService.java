@@ -12,8 +12,8 @@ public class ApiService {
     private WebClient webClient;
     private String serviceKey = "292a6012292a6012292a6012d92a3213ae2292a292a60124f7def0bc83a1353c93ac08f";
 
-    public Mono<VkApiResponse> exchangeSilentAuthToken(String silentToken, int uuid) {
-        String urlTemplate = "https://api.vk.com/method/auth.exchangeSilentAuthToken?v=5.131&token=%s&access_token=%s&uuid=%d";
+    public Mono<VkApiResponse> exchangeSilentAuthToken(String silentToken, String uuid) {
+        String urlTemplate = "https://api.vk.com/method/auth.exchangeSilentAuthToken?v=5.131&token=%s&access_token=%s&uuid=%s";
         String url = String.format(urlTemplate, silentToken, serviceKey, uuid);
         return webClient.get()
                 .uri(url)

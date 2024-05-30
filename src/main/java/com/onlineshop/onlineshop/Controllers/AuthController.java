@@ -43,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/exchangeSilentAuthToken")
-    public Mono<ResponseEntity<vkProfileInfoDTO>> exchangeSilentAuthToken(@RequestParam String silentToken, @RequestParam int uuid) {
+    public Mono<ResponseEntity<vkProfileInfoDTO>> exchangeSilentAuthToken(@RequestParam String silentToken, @RequestParam String uuid) {
         return authService.exchangeAndRetrieveProfile(silentToken, uuid)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.badRequest().body(null));
