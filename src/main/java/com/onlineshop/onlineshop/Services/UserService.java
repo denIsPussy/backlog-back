@@ -28,16 +28,6 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private EmailService emailService;
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    private ApiService apiService;
 
     public String registerUser(SignUpDTO signUpDTO) {
         User newUser = new User();
@@ -65,10 +55,10 @@ public class UserService implements UserDetailsService {
 //                .flatMap(vkApiResponse -> apiService.getProfileInfo(vkApiResponse.getAccessToken()));
 //    }
 
-    private AuthResponse authenticateAfterRegistration(SignUpDTO signUpDTO) {
-        AuthRequest request = new AuthRequest(signUpDTO.getUsername(), signUpDTO.getPassword());
-        return authService.authenticateUser(request);
-    }
+//    private AuthResponse authenticateAfterRegistration(SignUpDTO signUpDTO) {
+//        AuthRequest request = new AuthRequest(signUpDTO.getUsername(), signUpDTO.getPassword());
+//        return authService.authenticateUser(request);
+//    }
 
 //    public AuthenticationResponse authenticateUser(AuthenticationRequest request) throws AuthenticationException {
 //        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
