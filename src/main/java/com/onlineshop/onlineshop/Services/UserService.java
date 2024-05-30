@@ -41,7 +41,10 @@ public class UserService implements UserDetailsService {
 
     public String registerUser(SignUpDTO signUpDTO) {
         User newUser = new User();
-        if (signUpDTO.getVkId() != 0) newUser.setVkId(signUpDTO.getVkId());
+        if (signUpDTO.getVkId() != 0) {
+            newUser.setVkId(signUpDTO.getVkId());
+            newUser.setTwoFactorEnabled(false);
+        }
         newUser.setEmail(signUpDTO.getEmail());
         newUser.setFirstName(signUpDTO.getFirstName());
         newUser.setLastName(signUpDTO.getLastName());
