@@ -3,6 +3,7 @@ package com.onlineshop.onlineshop.Models.DTO.User;
 import com.onlineshop.onlineshop.Models.User;
 
 public class SignUpDTO {
+    private int vkId;
     private String firstName;
     private String lastName;
     private String patronymic;
@@ -15,12 +16,17 @@ public class SignUpDTO {
     }
 
     public SignUpDTO(User user) {
+        this.vkId = user.getVkId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.email = user.getEmail();
+    }
+
+    public int getVkId() {
+        return vkId;
     }
 
     public String getFirstName() {

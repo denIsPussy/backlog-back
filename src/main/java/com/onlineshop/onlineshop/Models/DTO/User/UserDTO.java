@@ -10,6 +10,7 @@ import java.util.List;
 
 public class UserDTO {
     private int id;
+    private int vkId;
     private String firstName;
     private String lastName;
     private String patronymic;
@@ -32,6 +33,7 @@ public class UserDTO {
 
     public UserDTO(User user) {
         this.id = user.getId();
+        this.vkId = user.getVkId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
@@ -51,6 +53,10 @@ public class UserDTO {
 
     public int getId() {
         return id;
+    }
+
+    public int getVkId() {
+        return vkId;
     }
 
     public String getFirstName() {

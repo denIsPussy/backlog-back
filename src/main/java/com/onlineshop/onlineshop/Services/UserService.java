@@ -4,6 +4,7 @@ import com.onlineshop.onlineshop.Models.Order;
 import com.onlineshop.onlineshop.Models.ShoppingCart;
 import com.onlineshop.onlineshop.Models.User;
 import com.onlineshop.onlineshop.Repositories.UserRepository;
+import com.onlineshop.onlineshop.Models.vk.VkApiResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 @Service
 @Transactional
@@ -36,6 +35,19 @@ public class UserService implements UserDetailsService {
             return "Что-то пошло не так. Попробуйте позже";
         }
     }
+
+    public String register(VkApiResponse vkApiResponse){
+        try{
+            User user = new User();
+            user.setVkId(vkApiResponse.getUserId());
+            userRepository.save(user);
+            return "Регистрация прошла успешно";
+        }
+        catch (Exception e){
+            return "Что-то пошло не так. Попробуйте позже";
+        }
+    }
+
 
     public ShoppingCart getShopCartByUsername(String username){
         try{

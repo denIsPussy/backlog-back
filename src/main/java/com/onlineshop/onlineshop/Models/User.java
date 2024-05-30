@@ -17,6 +17,9 @@ public class User{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "vk_id", unique = true)
+    private int vkId;
+
     @Column(name = "firstname")
     @NotNull
     private String firstName;
@@ -81,6 +84,7 @@ public class User{
 
     public User(UserDTO userDTO) {
         this.id = userDTO.getId();
+        this.vkId = userDTO.getVkId();
         this.firstName = userDTO.getFirstName();
         this.lastName = userDTO.getLastName();
         this.patronymic = userDTO.getPatronymic();
@@ -131,6 +135,14 @@ public class User{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getVkId() {
+        return vkId;
+    }
+
+    public void setVkId(int vkId) {
+        this.vkId = vkId;
     }
 
     public String getFirstName() {
