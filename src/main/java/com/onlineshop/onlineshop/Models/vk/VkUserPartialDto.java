@@ -1,16 +1,23 @@
 package com.onlineshop.onlineshop.Models.vk;
 
-public class User {
-    private Integer id;
+public class VkUserPartialDto extends  ApiResponse {
+    private int vkId;
     private String firstName;
     private String lastName;
 
-    public Integer getId() {
-        return id;
+    public VkUserPartialDto(int vkId, String firstName, String lastName, boolean success, String message) {
+        super(success, message);
+        this.vkId = vkId;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public int getVkId() {
+        return vkId;
+    }
+
+    public void setVkId(int vkId) {
+        this.vkId = vkId;
     }
 
     public String getFirstName() {

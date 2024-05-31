@@ -1,24 +1,26 @@
 package com.onlineshop.onlineshop.Controllers;
 
+import com.onlineshop.onlineshop.ApiResponse1;
 import com.onlineshop.onlineshop.ApiService;
+import com.onlineshop.onlineshop.ResponseMessageDto;
+import com.onlineshop.onlineshop.Exceptions.CustomExceptions.AuthenticationFailureException;
 import com.onlineshop.onlineshop.JwtUtil;
 import com.onlineshop.onlineshop.Models.DTO.SilentAuthDTO;
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
 import com.onlineshop.onlineshop.Models.TwoFactorCodeDTO;
-import com.onlineshop.onlineshop.Models.vk.vkProfileInfo;
-import com.onlineshop.onlineshop.Models.vk.vkProfileInfoDTO;
+import com.onlineshop.onlineshop.Models.vk.ApiResponse;
+import com.onlineshop.onlineshop.Models.vk.VkUserPartialDto;
 import com.onlineshop.onlineshop.Services.AuthService;
 import com.onlineshop.onlineshop.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
+
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class AuthController {
@@ -34,26 +36,44 @@ public class AuthController {
     private ApiService apiService;
 
     @PostMapping("/verifyTwoFactorCode")
-    public ResponseEntity<?> verifyTwoFactorCode(@RequestBody TwoFactorCodeDTO twoFactorCodeDTO) {
-        try {
-            String jwt = authService.validateAndGenerateJwt(twoFactorCodeDTO);
-            return ResponseEntity.ok(AuthResponse.withJwt(jwt));
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(AuthResponse.withError(e.getMessage()));
-        }
+    public ResponseEntity<ApiResponse> verifyTwoFactorCode(@RequestBody TwoFactorCodeDTO twoFactorCodeDTO) {
+        return ResponseEntity.ok(authService.validateAndGenerateJwt(twoFactorCodeDTO));
     }
+
+//    @PostMapping("/exchangeSilentAuthToken")
+//    public Mono<ResponseEntity<ApiResponse<?>>> exchangeSilentAuthToken(@RequestBody SilentAuthDTO silentAuthDTO) {
+//        return authService.exchangeAndRetrieveProfile(silentAuthDTO.getSilentToken(), silentAuthDTO.getUuid())
+//                .map(ResponseEntity::ok)
+//                .onErrorResume(AuthenticationFailureException.class, e -> {
+//                    ApiResponse<?> apiResponseWithData = ApiResponse.withMessage(e.getMessage());
+//                    return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponseWithData));
+//                })
+//                .onErrorResume(e ->
+//                        Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("df", "Внутренняя ошибка сервера")))
+//                )
+//                .defaultIfEmpty(ResponseEntity.badRequest().body(new ApiResponse("sds", "Неверный silent token или UUID")));
+//    }
+
 
     @PostMapping("/exchangeSilentAuthToken")
-    public Mono<ResponseEntity<vkProfileInfoDTO>> exchangeSilentAuthToken(@RequestBody SilentAuthDTO silentAuthDTO) {
+    public CompletableFuture<ResponseEntity<ApiResponse>> exchangeSilentAuthToken(@RequestBody SilentAuthDTO silentAuthDTO) {
         return authService.exchangeAndRetrieveProfile(silentAuthDTO.getSilentToken(), silentAuthDTO.getUuid())
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.badRequest().body(null));
+                .thenApply(body -> ResponseEntity.ok().body(body))
+                .exceptionally(e -> {
+                    Throwable cause = e.getCause();
+                    if (cause instanceof AuthenticationFailureException) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false,"Ошибка авторизации"){});
+                    }
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false,"Внутренняя ошибка сервера"){});
+                });
     }
 
+
+
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDTO) {
-        String message = userService.registerUser(signUpDTO);
-        return ResponseEntity.ok(AuthResponse.withMessage(message));
+    public ResponseEntity<ApiResponse> registerUser(@RequestBody SignUpDTO signUpDTO) {
+        userService.registerUser(signUpDTO);
+        return ResponseEntity.ok(new ApiResponse(true,"Регистрация прошла успешно!"){});
     }
 
 //    @PostMapping("/registerVk")
@@ -62,14 +82,31 @@ public class AuthController {
 //        return ResponseEntity.status(response.getJwt() == null ? HttpStatus.UNAUTHORIZED : HttpStatus.OK).body(response);
 //    }
 
+//    @PostMapping("/authenticate")
+//    public Mono<ResponseEntity<ApiResponse<String>>> authenticate(@RequestBody AuthRequest request) {
+//        return authService.authenticateUser(request)
+//                .map(ResponseEntity::ok)
+//                .onErrorResume(e -> {
+//                    if (e instanceof AuthenticationFailureException) {
+//                        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.withMessage(e.getMessage())));
+//                    } else {
+//                        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.withMessage("Внутренняя ошибка сервера")));
+//                    }
+//                });
+//    }
+
     @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticate(@RequestBody AuthRequest request) {
-        try {
-            AuthResponse response = authService.authenticateUser(request);
-            return ResponseEntity.ok(response);
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(AuthResponse.withError(e.getMessage()));
-        }
+    public CompletableFuture<ResponseEntity<ApiResponse>> authenticate(@RequestBody AuthRequest request) {
+        return authService.authenticateUser(request)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(e -> {
+                    if (e.getCause() instanceof AuthenticationFailureException) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Ошибка авторизаци"){});
+                    } else {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, "Внутренняя ошибка сервера"){});
+                    }
+                });
     }
+
 }
 
