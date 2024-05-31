@@ -18,7 +18,7 @@ public class User{
     private int id;
 
     @Column(name = "vk_id", unique = true)
-    private int vkId;
+    private Integer vkId;
 
     @Column(name = "firstname")
     @NotNull
@@ -137,11 +137,11 @@ public class User{
         this.id = id;
     }
 
-    public int getVkId() {
+    public Integer getVkId() {
         return vkId;
     }
 
-    public void setVkId(int vkId) {
+    public void setVkId(Integer vkId) {
         this.vkId = vkId;
     }
 

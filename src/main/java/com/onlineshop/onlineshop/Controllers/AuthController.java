@@ -12,6 +12,8 @@ import com.onlineshop.onlineshop.Models.vk.ApiResponse;
 import com.onlineshop.onlineshop.Models.vk.VkUserPartialDto;
 import com.onlineshop.onlineshop.Services.AuthService;
 import com.onlineshop.onlineshop.Services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ public class AuthController {
     private JwtUtil jwtUtil;
     @Autowired
     private ApiService apiService;
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
 
     @PostMapping("/verifyTwoFactorCode")
     public ResponseEntity<ApiResponse> verifyTwoFactorCode(@RequestBody TwoFactorCodeDTO twoFactorCodeDTO) {
@@ -101,9 +105,11 @@ public class AuthController {
                 .thenApply(ResponseEntity::ok)
                 .exceptionally(e -> {
                     if (e.getCause() instanceof AuthenticationFailureException) {
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "Ошибка авторизаци"){});
+                        logger.info("Username from request: {}",
+                                request.getUsername());
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()){});
                     } else {
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, "Внутренняя ошибка сервера"){});
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, e.getMessage()){});
                     }
                 });
     }

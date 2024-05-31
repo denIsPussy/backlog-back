@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UserDTO {
     private int id;
-    private int vkId;
+    private Integer vkId;
     private String firstName;
     private String lastName;
     private String patronymic;
@@ -55,7 +55,7 @@ public class UserDTO {
         return id;
     }
 
-    public int getVkId() {
+    public Integer getVkId() {
         return vkId;
     }
 

@@ -96,6 +96,9 @@ public class AuthService{
             try {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
                 final User user = userService.getByUsername(request.getUsername());
+                logger.info("Username from db: {}, Username from request: {}",
+                        user.getUsername(), request.getUsername());
+
                 if (user == null) throw new UsernameNotFoundException("Пользователь с таким именем не найден.");
                 if (user.isTwoFactorEnabled()) {
                     generateAndSend2FACode(user.getUsername());
