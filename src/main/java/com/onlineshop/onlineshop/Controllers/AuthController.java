@@ -66,9 +66,9 @@ public class AuthController {
                 .exceptionally(e -> {
                     Throwable cause = e.getCause();
                     if (cause instanceof AuthenticationFailureException) {
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false,"Ошибка авторизации"){});
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false,e.getMessage()){});
                     }
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false,"Внутренняя ошибка сервера"){});
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false,e.getMessage()){});
                 });
     }
 
