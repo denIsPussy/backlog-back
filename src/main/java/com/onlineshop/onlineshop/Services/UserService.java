@@ -122,7 +122,17 @@ public class UserService implements UserDetailsService {
     }
 
     public String update(User user){
-        return "";
+        try{
+            Optional<User> optUser = userRepository.findByUsername(user.getUsername());
+            User findUser = optUser.orElseThrow();
+            if (findUser == null) return "Пользователь не найден";
+            findUser.update(user);
+            userRepository.save(findUser);
+            return "Данные пользователя успешно обновлены";
+        }
+        catch (Exception e){
+            return "Что-то пошло не так. Попробуйте позже";
+        }
     }
 
     public boolean verifyUserCredentials(User user){
