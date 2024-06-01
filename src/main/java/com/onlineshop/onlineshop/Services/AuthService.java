@@ -71,8 +71,9 @@ public class AuthService{
                 .thenCompose(vkApiResponse -> {
                     User user = userService.getByVkId(vkApiResponse.getResponse().getUserId());
                     if (user != null) {
-                        return authenticateUser(new AuthRequest(user.getUsername(), user.getPassword()))
-                                .thenApply(jwtToken -> jwtToken);
+                        logger.info("Username : {}",
+                                user.getUsername());
+                        return authenticateUser(new AuthRequest(vkApiResponse.getResponse().getUserId()));
                     }
                     return apiService.getProfileInfo(vkApiResponse.getResponse().getAccessToken())
                             .thenApply(profileInfo -> new VkUserPartialDto(
@@ -94,24 +95,34 @@ public class AuthService{
     public CompletableFuture<ApiResponse> authenticateUser(AuthRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-                final User user = userService.getByUsername(request.getUsername());
-                logger.info("Username from db: {}, Username from request: {}",
-                        user.getUsername(), request.getUsername());
+                UserDetails userDetails;
+                User user;
 
-                if (user == null) throw new UsernameNotFoundException("Пользователь с таким именем не найден.");
-                if (user.isTwoFactorEnabled()) {
-                    generateAndSend2FACode(user.getUsername());
-                    return new ApiResponse(true,"Код 2FA отправлен на ваш электронный адрес. Пожалуйста, подтвердите, чтобы завершить авторизацию.") {
-                    };
+                if (request.getVkId() != 0) {
+                    // Аутентификация по vkId
+                    user = userService.getByVkId(request.getVkId());
+                    if (user == null) throw new UsernameNotFoundException("Пользователь с таким vkId не найден.");
+                } else {
+                    // Стандартная аутентификация по имени пользователя и паролю
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+                    user = userService.getByUsername(request.getUsername());
+                    if (user == null) throw new UsernameNotFoundException("Пользователь с таким именем не найден.");
+
+                    logger.info("Authenticated user: {}", user.getUsername());
+
+                    if (user.isTwoFactorEnabled()) {
+                        generateAndSend2FACode(user.getUsername());
+                        return new ApiResponse(true,"Код 2FA отправлен на ваш электронный адрес. Пожалуйста, подтвердите, чтобы завершить авторизацию."){};
+                    }
                 }
-                final UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
+                userDetails = userService.loadUserByUsername(user.getUsername());
                 return new UserTokenDto(jwtUtil.generateToken(userDetails), user.getUsername(), true, "token");
             } catch (Exception e) {
                 throw new CompletionException(new AuthenticationFailureException(e.getMessage()));
             }
         });
     }
+
 
 
 
