@@ -2,6 +2,7 @@ package com.onlineshop.onlineshop;
 
 import com.onlineshop.onlineshop.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -37,6 +38,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfiguration {
     @Autowired
     JwtRequestFilter jwtAuthFilter;
+    @Value("${allowed.origins}")
+    private String[] allowedOrigins;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -68,7 +71,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://backlogshop.ru:3000", "https://backlogshop.ru:3000", "http://backlogshop.ru", "https://backlogshop.ru"));
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
         configuration.setAllowedMethods(Arrays.asList("GET","POST"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true);
