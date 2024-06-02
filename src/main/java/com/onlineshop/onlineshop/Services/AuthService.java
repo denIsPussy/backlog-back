@@ -1,5 +1,4 @@
 package com.onlineshop.onlineshop.Services;
-import com.onlineshop.onlineshop.ApiResponse1;
 import com.onlineshop.onlineshop.ApiService;
 import com.onlineshop.onlineshop.Controllers.AuthRequest;
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.AuthenticationFailureException;
@@ -9,7 +8,6 @@ import com.onlineshop.onlineshop.Models.User;
 import com.onlineshop.onlineshop.Models.vk.ApiResponse;
 import com.onlineshop.onlineshop.Models.vk.UserTokenDto;
 import com.onlineshop.onlineshop.Models.vk.VkUserPartialDto;
-import com.onlineshop.onlineshop.ResponseMessageDto;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;

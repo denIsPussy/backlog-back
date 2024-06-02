@@ -41,14 +41,33 @@ public class ProductService {
         return productRepository.findById(productId);
     }
     public void test(){
-        ClassPathResource imageResource = new ClassPathResource("images/word.png");
-        Path path = null;
+
         try {
-            path = imageResource.getFile().toPath();
-            byte[] imageBytes = Files.readAllBytes(path);
+
             List<Product> products = productRepository.findAll();
             for (int i = 0; i < products.size(); i++){
                 Product product = products.get(i);
+                String imagePath = "";
+                switch (product.getId()){
+                    case 1:
+                        imagePath = "images/Gainward GeForce RTX 4090 Phantom GS.png";
+                        break;
+                    case 2:
+                        imagePath = "images/DEEPCOOL LS720 WH.png";
+                        break;
+                    case 3:
+                        imagePath = "images/Intel Core i9-14900K.png";
+                        break;
+                    case 4:
+                        imagePath = "images/MSI Katana B12VFK-463XRU.png";
+                        break;
+                    case 5:
+                        imagePath = "images/Razer Viper Ultimate.png";
+                        break;
+                }
+                ClassPathResource imageResource = new ClassPathResource(imagePath);
+                Path path = imageResource.getFile().toPath();
+                byte[] imageBytes = Files.readAllBytes(path);
                 product.setImage(imageBytes);
                 productRepository.save(product);
             }

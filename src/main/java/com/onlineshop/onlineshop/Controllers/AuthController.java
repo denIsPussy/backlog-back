@@ -1,15 +1,12 @@
 package com.onlineshop.onlineshop.Controllers;
 
-import com.onlineshop.onlineshop.ApiResponse1;
 import com.onlineshop.onlineshop.ApiService;
-import com.onlineshop.onlineshop.ResponseMessageDto;
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.AuthenticationFailureException;
 import com.onlineshop.onlineshop.JwtUtil;
 import com.onlineshop.onlineshop.Models.DTO.SilentAuthDTO;
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
 import com.onlineshop.onlineshop.Models.TwoFactorCodeDTO;
 import com.onlineshop.onlineshop.Models.vk.ApiResponse;
-import com.onlineshop.onlineshop.Models.vk.VkUserPartialDto;
 import com.onlineshop.onlineshop.Services.AuthService;
 import com.onlineshop.onlineshop.Services.UserService;
 import org.slf4j.Logger;
