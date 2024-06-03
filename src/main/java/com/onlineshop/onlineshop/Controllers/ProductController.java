@@ -1,5 +1,6 @@
 package com.onlineshop.onlineshop.Controllers;
 
+import com.onlineshop.onlineshop.Models.DTO.CategoryCompositeDTO;
 import com.onlineshop.onlineshop.Models.DTO.Product.ProductViewDTO;
 import com.onlineshop.onlineshop.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,13 @@ public class ProductController {
     public List<ProductViewDTO> filterByPrice(@RequestParam String price){
         return null;
     }
-    @GetMapping(path="/byCategory")
-    public List<ProductViewDTO> filterByCategory(@RequestParam String category){
-        return null;
+    @GetMapping(path="/byCategory/{categoryId}")
+    public List<ProductViewDTO> filterByCategory(@PathVariable int categoryId){
+        return productService.filterByCategory(categoryId).stream().map(ProductViewDTO::new).toList();
+    }
+    @GetMapping(path="/categories")
+    public List<CategoryCompositeDTO> getCategories(){
+        return productService.getCategories().stream().map(CategoryCompositeDTO::new).toList();
     }
     @GetMapping(path="/search")
     public List<ProductViewDTO> search(@RequestParam String name){

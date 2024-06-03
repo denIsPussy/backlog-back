@@ -1,6 +1,8 @@
 package com.onlineshop.onlineshop.Services;
 
+import com.onlineshop.onlineshop.Models.Category;
 import com.onlineshop.onlineshop.Models.Product;
+import com.onlineshop.onlineshop.Repositories.CategoryRepository;
 import com.onlineshop.onlineshop.Repositories.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +20,23 @@ import java.util.Optional;
 public class ProductService {
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
-    public List<Product>  filterByRating(String rating){
+    public List<Product> filterByRating(String rating){
         return null;
+    }
+    public List<Category> getCategories(){
+        return categoryRepository.findAll();
     }
     public List<Product> filterByPrice(String price){
         return null;
     }
-    public List<Product> filterByCategory(String category){
-        return null;
+    public List<Product> filterByCategory(int categoryId){
+        return productRepository.findByCategoryList_Id(categoryId);
     }
     public List<Product> search(String name){
         return null;

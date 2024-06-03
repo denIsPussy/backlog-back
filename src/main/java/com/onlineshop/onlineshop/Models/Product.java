@@ -23,7 +23,7 @@ public class Product {
     @NotNull
     private float price;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     @NotNull
     private String description;
 
