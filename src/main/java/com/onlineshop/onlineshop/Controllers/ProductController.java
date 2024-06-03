@@ -5,6 +5,12 @@ import com.onlineshop.onlineshop.Models.DTO.Product.ProductViewDTO;
 import com.onlineshop.onlineshop.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -23,8 +29,11 @@ public class ProductController {
         return null;
     }
     @GetMapping(path="/byCategory/{categoryId}")
-    public List<ProductViewDTO> filterByCategory(@PathVariable int categoryId){
-        return productService.filterByCategory(categoryId).stream().map(ProductViewDTO::new).toList();
+    public Page<ProductViewDTO> filterByCategory(@PathVariable int categoryId,
+                                                 @RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return productService.filterByCategory(categoryId, pageable).map(ProductViewDTO::new);
     }
     @GetMapping(path="/categories")
     public List<CategoryCompositeDTO> getCategories(){
@@ -34,9 +43,11 @@ public class ProductController {
     public List<ProductViewDTO> search(@RequestParam String name){
         return null;
     }
-    @GetMapping(path="/")
-    public List<ProductViewDTO> getAll(){
-        return productService.getAll().stream().map(ProductViewDTO::new).toList();
+    @GetMapping(path = "/")
+    public Page<ProductViewDTO> getAll(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productService.getAll(pageable).map(ProductViewDTO::new);
     }
 
     @GetMapping(path="/test")

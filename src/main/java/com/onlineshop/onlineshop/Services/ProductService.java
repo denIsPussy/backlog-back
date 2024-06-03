@@ -8,12 +8,15 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 
 @Service
 @Transactional
@@ -35,14 +38,14 @@ public class ProductService {
     public List<Product> filterByPrice(String price){
         return null;
     }
-    public List<Product> filterByCategory(int categoryId){
-        return productRepository.findByCategoryList_Id(categoryId);
+    public Page<Product> filterByCategory(int categoryId, Pageable pageable){
+        return productRepository.findByCategoryList_Id(categoryId, pageable);
     }
     public List<Product> search(String name){
         return null;
     }
-    public List<Product> getAll(){
-        return productRepository.findAll();
+    public Page<Product> getAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
     public Optional<Product> getById(int productId){
         return productRepository.findById(productId);
