@@ -3,6 +3,7 @@ package com.onlineshop.onlineshop.Controllers;
 import com.onlineshop.onlineshop.Models.DTO.CategoryCompositeDTO;
 import com.onlineshop.onlineshop.Models.DTO.Product.ProductViewDTO;
 import com.onlineshop.onlineshop.Services.ProductService;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
@@ -42,6 +43,10 @@ public class ProductController {
     @GetMapping(path="/search")
     public List<ProductViewDTO> search(@RequestParam String name){
         return null;
+    }
+    @GetMapping(path="/get/{productId}")
+    public ProductViewDTO search(@PathVariable int productId){
+        return new ProductViewDTO(productService.getById(productId));
     }
     @GetMapping(path = "/")
     public Page<ProductViewDTO> getAll(@RequestParam(defaultValue = "0") int page,

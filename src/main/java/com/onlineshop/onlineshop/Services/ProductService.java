@@ -47,8 +47,8 @@ public class ProductService {
     public Page<Product> getAll(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
-    public Optional<Product> getById(int productId){
-        return productRepository.findById(productId);
+    public Product getById(int productId){
+        return productRepository.findById(productId).orElseThrow();
     }
     public void test(){
 
