@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO;
 
-import com.onlineshop.onlineshop.Models.Notification;
+import com.onlineshop.onlineshop.Models.EverythingElse.Notification;
 
 public class NotificationDTO {
     private int id;

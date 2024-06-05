@@ -1,6 +1,7 @@
-package com.onlineshop.onlineshop.Models;
+package com.onlineshop.onlineshop.Models.EverythingElse;
 
 import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemViewDTO;
+import com.onlineshop.onlineshop.Models.Products.Product;
 import jakarta.persistence.*;
 
 @Entity

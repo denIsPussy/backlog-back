@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO;
 
-import com.onlineshop.onlineshop.Models.Status;
+import com.onlineshop.onlineshop.Models.EverythingElse.Status;
 
 public class StatusNestedDTO {
     private int id;

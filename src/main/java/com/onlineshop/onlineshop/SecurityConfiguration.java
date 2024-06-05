@@ -56,7 +56,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 // Настройка правил авторизации
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/authenticate", "/register", "/exchangeSilentAuthToken", "/verifyTwoFactorCode", "/products/**").permitAll()
+                        .requestMatchers("/authenticate", "/register", "/exchangeSilentAuthToken", "/verifyTwoFactorCode", "/products/**", "/cart/**").permitAll()
                         .anyRequest().authenticated())
                 // Управление сессией
                 .sessionManagement(session -> session
@@ -72,7 +72,7 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST", "DELETE", "UPDATE"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

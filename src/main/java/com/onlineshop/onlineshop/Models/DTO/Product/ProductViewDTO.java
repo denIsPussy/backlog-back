@@ -1,10 +1,10 @@
 package com.onlineshop.onlineshop.Models.DTO.Product;
 
+import com.onlineshop.onlineshop.Models.DTO.AttributeNestedDTO;
 import com.onlineshop.onlineshop.Models.DTO.CategoryCompositeDTO;
 import com.onlineshop.onlineshop.Models.DTO.DiscountNestedDTO;
 import com.onlineshop.onlineshop.Models.DTO.StoreItem.StoreItemNestedDTO;
-import com.onlineshop.onlineshop.Models.DTO.StoreItem.StoreItemViewDTO;
-import com.onlineshop.onlineshop.Models.Product;
+import com.onlineshop.onlineshop.Models.Products.Product;
 
 import java.util.List;
 
@@ -16,8 +16,9 @@ public class ProductViewDTO {
     private float rating;
     private byte[] image;
     private List<DiscountNestedDTO> discountList;
-    private List<CategoryCompositeDTO> categoryList;
+    private CategoryCompositeDTO category;
     private List<StoreItemNestedDTO> storeList;
+    private List<AttributeNestedDTO> attributeList;
 
     public ProductViewDTO() {
     }
@@ -31,7 +32,8 @@ public class ProductViewDTO {
         this.image = product.getImage();
         this.discountList = product.getDiscountList().stream().map(DiscountNestedDTO::new).toList();
         this.storeList = product.getStoreList().stream().map(StoreItemNestedDTO::new).toList();
-        this.categoryList = product.getCategoryList().stream().map(CategoryCompositeDTO::new).toList();
+        this.category = new CategoryCompositeDTO(product.getCategory());
+        this.attributeList = product.getProductAttributes().stream().map(AttributeNestedDTO::new).toList();
     }
 
     public int getId() {
@@ -66,7 +68,13 @@ public class ProductViewDTO {
         return storeList;
     }
 
-    public List<CategoryCompositeDTO> getCategoryList() {
-        return categoryList;
+    public CategoryCompositeDTO getCategory() {
+        return category;
     }
+
+    public List<AttributeNestedDTO> getAttributeList() {
+        return attributeList;
+    }
+
+
 }

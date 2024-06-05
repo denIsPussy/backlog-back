@@ -1,8 +1,7 @@
 package com.onlineshop.onlineshop.Models.DTO.OrderItem;
 
 import com.onlineshop.onlineshop.Models.DTO.Product.ProductNestedDTO;
-import com.onlineshop.onlineshop.Models.DTO.Product.ProductViewDTO;
-import com.onlineshop.onlineshop.Models.OrderItem;
+import com.onlineshop.onlineshop.Models.EverythingElse.OrderItem;
 
 public class OrderItemViewDTO {
     private int id;

@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO.User;
 
-import com.onlineshop.onlineshop.Models.User;
+import com.onlineshop.onlineshop.Models.EverythingElse.User;
 
 public class SignInDTO {
     private String username;

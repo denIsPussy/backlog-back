@@ -1,8 +1,12 @@
-package com.onlineshop.onlineshop.Models;
+package com.onlineshop.onlineshop.Models.EverythingElse;
 
 import com.onlineshop.onlineshop.Models.DTO.CategoryCompositeDTO;
+import com.onlineshop.onlineshop.Models.Products.Attribute;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -18,6 +22,10 @@ public class Category {
 
     @Column(name = "description")
     private String description;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id")
+    private List<Attribute> attributes = new ArrayList<>();
 
     public Category(){
 
@@ -51,5 +59,13 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<Attribute> attributes) {
+        this.attributes = attributes;
     }
 }

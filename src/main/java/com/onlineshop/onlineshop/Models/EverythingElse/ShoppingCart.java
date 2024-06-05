@@ -1,4 +1,4 @@
-package com.onlineshop.onlineshop.Models;
+package com.onlineshop.onlineshop.Models.EverythingElse;
 
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.ShoppingCartDTO;
 import jakarta.persistence.*;
@@ -46,14 +46,16 @@ public class ShoppingCart {
     }
 
     public void removeFromCartItems(CartItem cartItem) {
-        this.cartItems.removeIf(item -> item.getId() == cartItem.getId());
+        this.cartItems.remove(cartItem);
     }
 
     public void increseProductQuantity(int productId) {
-        this.cartItems.stream().filter(item -> item.getId() == productId).findFirst().orElseThrow().increaseQuantity();
+        this.cartItems.stream().filter(item -> item.getProduct().getId() == productId).findFirst().orElseThrow().increaseQuantity();
     }
 
-    public void reduceProductQuantity(int productId) {
-        this.cartItems.stream().filter(item -> item.getId() == productId).findFirst().orElseThrow().reduceQuantity();
+    public int reduceProductQuantity(int productId) {
+        CartItem cartItem = this.cartItems.stream().filter(item -> item.getProduct().getId() == productId).findFirst().orElseThrow();
+        cartItem.reduceQuantity();
+        return cartItem.getQuantity();
     }
 }

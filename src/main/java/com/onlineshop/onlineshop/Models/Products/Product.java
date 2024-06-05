@@ -1,10 +1,15 @@
-package com.onlineshop.onlineshop.Models;
+package com.onlineshop.onlineshop.Models.Products;
 
 import com.onlineshop.onlineshop.Models.DTO.Product.ProductNestedDTO;
 import com.onlineshop.onlineshop.Models.DTO.Product.ProductViewDTO;
+import com.onlineshop.onlineshop.Models.EverythingElse.Category;
+import com.onlineshop.onlineshop.Models.EverythingElse.Discount;
+import com.onlineshop.onlineshop.Models.EverythingElse.OrderItem;
+import com.onlineshop.onlineshop.Models.EverythingElse.StoreItem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,54 +40,53 @@ public class Product {
     @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] image;
 
-    @OneToMany(mappedBy = "product")
-    private List<StoreItem> storeList;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @OneToMany(mappedBy = "product")
-    private List<OrderItem> orderItems;
-//
+    private List<StoreItem> storeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product")
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductAttribute> productAttributes = new ArrayList<>();
+    //
 //    @OneToMany(mappedBy = "product")
 //    private List<CartItem> cartItems;
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name = "product_discount",
-            joinColumns = { @JoinColumn(name = "product_id") },
-            inverseJoinColumns = { @JoinColumn(name = "discount_id") }
+            joinColumns = {@JoinColumn(name = "product_id")},
+            inverseJoinColumns = {@JoinColumn(name = "discount_id")}
     )
-    private List<Discount> discountList;
+    private List<Discount> discountList = new ArrayList<>();
 
-    @ManyToMany(cascade = { CascadeType.ALL })
-    @JoinTable(
-            name = "product_category",
-            joinColumns = { @JoinColumn(name = "product_id") },
-            inverseJoinColumns = { @JoinColumn(name = "category_id") }
-    )
-    private List<Category> categoryList;
-
-    public Product(){
+    public Product() {
 
     }
 
-    public Product(ProductViewDTO productViewDTO){
+    public Product(ProductViewDTO productViewDTO) {
         this.id = productViewDTO.getId();
-        this.name = productViewDTO.getName();
-        this.price = productViewDTO.getId();
-        this.description = productViewDTO.getDescription();
-        this.rating = productViewDTO.getRating();
-        this.image = productViewDTO.getImage();
-        this.storeList = productViewDTO.getStoreList().stream().map(StoreItem::new).toList();
-        this.discountList = productViewDTO.getDiscountList().stream().map(Discount::new).toList();
-        this.categoryList = productViewDTO.getCategoryList().stream().map(Category::new).toList();
+//        this.name = productViewDTO.getName();
+//        this.price = productViewDTO.getId();
+//        this.description = productViewDTO.getDescription();
+//        this.rating = productViewDTO.getRating();
+//        this.image = productViewDTO.getImage();
+//        this.storeList = productViewDTO.getStoreList().stream().map(StoreItem::new).toList();
+//        this.discountList = productViewDTO.getDiscountList().stream().map(Discount::new).toList();
+//        this.categoryList = productViewDTO.getCategoryList().stream().map(Category::new).toList();
     }
 
-    public Product(ProductNestedDTO productNestedDTO){
+    public Product(ProductNestedDTO productNestedDTO) {
         this.id = productNestedDTO.getId();
-        this.name = productNestedDTO.getName();
-        this.price = productNestedDTO.getId();
-        this.description = productNestedDTO.getDescription();
-        this.rating = productNestedDTO.getRating();
-        this.image = productNestedDTO.getImage();
+//        this.name = productNestedDTO.getName();
+//        this.price = productNestedDTO.getId();
+//        this.description = productNestedDTO.getDescription();
+//        this.rating = productNestedDTO.getRating();
+//        this.image = productNestedDTO.getImage();
     }
 
     public int getId() {
@@ -141,12 +145,12 @@ public class Product {
         this.discountList = discountList;
     }
 
-    public List<Category> getCategoryList() {
-        return categoryList;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryList(List<Category> categoryList) {
-        this.categoryList = categoryList;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public List<StoreItem> getStoreList() {
@@ -172,7 +176,16 @@ public class Product {
     public void removeFromOrderItems(OrderItem orderItem) {
         this.orderItems.removeIf(item -> item.getId() == orderItem.getId());
     }
-//
+
+    public List<ProductAttribute> getProductAttributes() {
+        return productAttributes;
+    }
+
+    public void setProductAttributes(List<ProductAttribute> productAttributes) {
+        this.productAttributes = productAttributes;
+    }
+
+    //
 //    public List<CartItem> getCartItems() {
 //        return cartItems;
 //    }

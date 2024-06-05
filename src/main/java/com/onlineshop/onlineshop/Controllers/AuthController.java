@@ -5,7 +5,7 @@ import com.onlineshop.onlineshop.Exceptions.CustomExceptions.AuthenticationFailu
 import com.onlineshop.onlineshop.JwtUtil;
 import com.onlineshop.onlineshop.Models.DTO.SilentAuthDTO;
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
-import com.onlineshop.onlineshop.Models.TwoFactorCodeDTO;
+import com.onlineshop.onlineshop.Models.EverythingElse.TwoFactorCodeDTO;
 import com.onlineshop.onlineshop.Models.vk.ApiResponse;
 import com.onlineshop.onlineshop.Services.AuthService;
 import com.onlineshop.onlineshop.Services.UserService;

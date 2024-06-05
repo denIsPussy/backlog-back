@@ -1,7 +1,10 @@
 package com.onlineshop.onlineshop.Models.DTO.Order;
 
-import com.onlineshop.onlineshop.Models.*;
 import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemViewDTO;
+import com.onlineshop.onlineshop.Models.EverythingElse.Order;
+import com.onlineshop.onlineshop.Models.EverythingElse.PaymentMethod;
+import com.onlineshop.onlineshop.Models.EverythingElse.ShippingMethod;
+import com.onlineshop.onlineshop.Models.EverythingElse.Status;
 
 import java.util.List;
 

@@ -45,7 +45,7 @@ public class ProductController {
         return null;
     }
     @GetMapping(path="/get/{productId}")
-    public ProductViewDTO search(@PathVariable int productId){
+    public ProductViewDTO getById(@PathVariable int productId){
         return new ProductViewDTO(productService.getById(productId));
     }
     @GetMapping(path = "/")

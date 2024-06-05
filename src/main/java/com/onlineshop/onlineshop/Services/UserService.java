@@ -1,12 +1,14 @@
 package com.onlineshop.onlineshop.Services;
 
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
-import com.onlineshop.onlineshop.Models.Order;
-import com.onlineshop.onlineshop.Models.ShoppingCart;
-import com.onlineshop.onlineshop.Models.User;
+import com.onlineshop.onlineshop.Models.EverythingElse.Order;
+import com.onlineshop.onlineshop.Models.EverythingElse.ShoppingCart;
+import com.onlineshop.onlineshop.Models.EverythingElse.User;
 import com.onlineshop.onlineshop.Repositories.UserRepository;
 import com.onlineshop.onlineshop.Models.vk.VkApiResponse;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     public String registerUser(SignUpDTO signUpDTO) {
         User newUser = new User();
@@ -103,6 +106,7 @@ public class UserService implements UserDetailsService {
         try{
             Optional<User> findUser = userRepository.findByUsername(username);
             User user = findUser.orElseThrow();
+            logger.info(user.getShoppingCart().getCartItems().toString());
             return user.getShoppingCart();
         }
         catch (Exception e){

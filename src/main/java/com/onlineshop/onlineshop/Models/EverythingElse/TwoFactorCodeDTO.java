@@ -1,4 +1,4 @@
-package com.onlineshop.onlineshop.Models;
+package com.onlineshop.onlineshop.Models.EverythingElse;
 
 public class TwoFactorCodeDTO {
     private String code;

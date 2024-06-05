@@ -1,7 +1,7 @@
 package com.onlineshop.onlineshop.Services;
 
-import com.onlineshop.onlineshop.Models.Category;
-import com.onlineshop.onlineshop.Models.Product;
+import com.onlineshop.onlineshop.Models.EverythingElse.Category;
+import com.onlineshop.onlineshop.Models.Products.Product;
 import com.onlineshop.onlineshop.Repositories.CategoryRepository;
 import com.onlineshop.onlineshop.Repositories.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -12,9 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
+
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 
@@ -39,7 +38,7 @@ public class ProductService {
         return null;
     }
     public Page<Product> filterByCategory(int categoryId, Pageable pageable){
-        return productRepository.findByCategoryList_Id(categoryId, pageable);
+        return productRepository.findByCategory_Id(categoryId, pageable);
     }
     public List<Product> search(String name){
         return null;

@@ -2,8 +2,8 @@ package com.onlineshop.onlineshop.Models.DTO.User;
 
 import com.onlineshop.onlineshop.Models.DTO.NotificationDTO;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderViewDTO;
-import com.onlineshop.onlineshop.Models.ShoppingCart;
-import com.onlineshop.onlineshop.Models.User;
+import com.onlineshop.onlineshop.Models.EverythingElse.ShoppingCart;
+import com.onlineshop.onlineshop.Models.EverythingElse.User;
 
 import java.time.LocalDateTime;
 import java.util.List;

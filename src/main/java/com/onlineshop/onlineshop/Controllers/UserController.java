@@ -1,13 +1,11 @@
 package com.onlineshop.onlineshop.Controllers;
 
-import com.onlineshop.onlineshop.Models.CartItem;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderViewDTO;
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.CartItemCreateDTO;
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.ShoppingCartDTO;
 import com.onlineshop.onlineshop.Models.DTO.User.UserDTO;
-import com.onlineshop.onlineshop.Models.Product;
-import com.onlineshop.onlineshop.Models.ShoppingCart;
-import com.onlineshop.onlineshop.Models.User;
+import com.onlineshop.onlineshop.Models.EverythingElse.ShoppingCart;
+import com.onlineshop.onlineshop.Models.EverythingElse.User;
 import com.onlineshop.onlineshop.Services.ProductService;
 import com.onlineshop.onlineshop.Services.ShoppingCartService;
 import com.onlineshop.onlineshop.Services.UserService;
@@ -17,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -65,7 +62,7 @@ public class UserController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(userDetails.getUsername());
         ShoppingCart shoppCart = user.getShoppingCart();
-        shoppingCartService.removeFromCart(shoppCart, productId);
+        //shoppingCartService.removeFromCart(shoppCart, productId);
         //return new ShoppingCartDTO(newCart);
     }
 

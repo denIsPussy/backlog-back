@@ -1,8 +1,7 @@
 package com.onlineshop.onlineshop.Models.DTO.Store;
 
 import com.onlineshop.onlineshop.Models.DTO.AddressNestedDTO;
-import com.onlineshop.onlineshop.Models.DTO.StoreItem.StoreItemNestedDTO;
-import com.onlineshop.onlineshop.Models.Store;
+import com.onlineshop.onlineshop.Models.EverythingElse.Store;
 
 public class StoreViewDTO {
     private int id;

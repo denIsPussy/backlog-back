@@ -1,7 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO;
 
 import com.onlineshop.onlineshop.Models.Status;
-import com.onlineshop.onlineshop.Models.Status;
 
 public class StatusDTO {
     private int id;

@@ -1,6 +1,7 @@
-package com.onlineshop.onlineshop.Models;
+package com.onlineshop.onlineshop.Models.EverythingElse;
 
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.CartItemViewDTO;
+import com.onlineshop.onlineshop.Models.Products.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -20,12 +21,16 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private ShoppingCart cart;
+
     public CartItem(){
     }
 
     public CartItem(CartItemViewDTO cartItemViewDTO){
-        this.id = cartItemViewDTO.getId();
-        //this.product = new Product(cartItemDTO.getProduct());
+        //this.id = cartItemViewDTO.getId();
+        this.product = new Product(cartItemViewDTO.getProduct());
         //this.shoppingCart = new ShoppingCart(cartItemDTO.getShoppingCart());
         this.quantity = cartItemViewDTO.getQuantity();
     }
@@ -60,5 +65,13 @@ public class CartItem {
 
     public void reduceQuantity() {
         this.quantity--;
+    }
+
+    public ShoppingCart getCart() {
+        return cart;
+    }
+
+    public void setCart(ShoppingCart cart) {
+        this.cart = cart;
     }
 }

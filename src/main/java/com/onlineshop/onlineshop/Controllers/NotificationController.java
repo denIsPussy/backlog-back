@@ -1,7 +1,7 @@
 //package com.onlineshop.onlineshop.Controllers;
 //
 //import com.onlineshop.onlineshop.Models.DTO.OrderDTO;
-//import com.onlineshop.onlineshop.Models.Order;
+//import com.onlineshop.onlineshop.Models.EverythingElse.Order;
 //import com.onlineshop.onlineshop.Repositories.OrderRepository;
 //import com.onlineshop.onlineshop.Services.NotificationService;
 //import com.onlineshop.onlineshop.Services.OrderService;

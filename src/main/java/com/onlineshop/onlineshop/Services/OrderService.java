@@ -1,15 +1,13 @@
 package com.onlineshop.onlineshop.Services;
 
-import com.onlineshop.onlineshop.Models.Order;
-import com.onlineshop.onlineshop.Models.User;
+import com.onlineshop.onlineshop.Models.EverythingElse.Order;
+import com.onlineshop.onlineshop.Models.EverythingElse.User;
 import com.onlineshop.onlineshop.Repositories.OrderRepository;
 import com.onlineshop.onlineshop.Repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

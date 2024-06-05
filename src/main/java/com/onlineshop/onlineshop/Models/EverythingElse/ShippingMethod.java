@@ -1,11 +1,12 @@
-package com.onlineshop.onlineshop.Models;
+package com.onlineshop.onlineshop.Models.EverythingElse;
 
-import com.onlineshop.onlineshop.Models.DTO.StatusNestedDTO;
+import com.onlineshop.onlineshop.Models.DTO.ShippingMethodNestedDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
 @Entity
-@Table(name = "statuses")
-public class Status {
+@Table(name = "shippingMethods")
+public class ShippingMethod {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,13 +16,13 @@ public class Status {
     @NotNull
     private String description;
 
-    public Status(){
+    public ShippingMethod(){
 
     }
 
-    public Status(StatusNestedDTO statusNestedDTO) {
-        this.id = statusNestedDTO.getId();
-        this.description = statusNestedDTO.getDescription();
+    public ShippingMethod(ShippingMethodNestedDTO shippingMethodNestedDTO) {
+        this.id = shippingMethodNestedDTO.getId();
+        this.description = shippingMethodNestedDTO.getDescription();
     }
 
     public int getId() {

@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO.ShopCart;
 
-import com.onlineshop.onlineshop.Models.ShoppingCart;
+import com.onlineshop.onlineshop.Models.EverythingElse.ShoppingCart;
 
 import java.util.List;
 

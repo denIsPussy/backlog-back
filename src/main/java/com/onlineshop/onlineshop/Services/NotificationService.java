@@ -1,15 +1,11 @@
 package com.onlineshop.onlineshop.Services;
 
-import com.onlineshop.onlineshop.Models.Notification;
-import com.onlineshop.onlineshop.Models.Order;
-import com.onlineshop.onlineshop.Models.User;
+import com.onlineshop.onlineshop.Models.EverythingElse.Notification;
 import com.onlineshop.onlineshop.Repositories.NotificationRepository;
-import com.onlineshop.onlineshop.Repositories.OrderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service

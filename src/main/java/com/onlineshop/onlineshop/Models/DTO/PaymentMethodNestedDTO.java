@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO;
 
-import com.onlineshop.onlineshop.Models.PaymentMethod;
+import com.onlineshop.onlineshop.Models.EverythingElse.PaymentMethod;
 
 public class PaymentMethodNestedDTO {
     private int id;

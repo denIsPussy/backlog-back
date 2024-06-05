@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO;
 
-import com.onlineshop.onlineshop.Models.ShippingMethod;
+import com.onlineshop.onlineshop.Models.EverythingElse.ShippingMethod;
 
 public class ShippingMethodNestedDTO {
     private int id;

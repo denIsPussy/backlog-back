@@ -1,8 +1,7 @@
 package com.onlineshop.onlineshop.Models.DTO.StoreItem;
 
-import com.onlineshop.onlineshop.Models.DTO.Product.ProductNestedDTO;
 import com.onlineshop.onlineshop.Models.DTO.Store.StoreNestedDTO;
-import com.onlineshop.onlineshop.Models.StoreItem;
+import com.onlineshop.onlineshop.Models.EverythingElse.StoreItem;
 
 public class StoreItemNestedDTO {
     private int id;

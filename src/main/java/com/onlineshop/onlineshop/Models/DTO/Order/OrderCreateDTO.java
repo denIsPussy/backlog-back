@@ -1,11 +1,9 @@
 package com.onlineshop.onlineshop.Models.DTO.Order;
 
 import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemCreateDTO;
-import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemViewDTO;
-import com.onlineshop.onlineshop.Models.Order;
-import com.onlineshop.onlineshop.Models.PaymentMethod;
-import com.onlineshop.onlineshop.Models.ShippingMethod;
-import com.onlineshop.onlineshop.Models.Status;
+import com.onlineshop.onlineshop.Models.EverythingElse.PaymentMethod;
+import com.onlineshop.onlineshop.Models.EverythingElse.ShippingMethod;
+import com.onlineshop.onlineshop.Models.EverythingElse.Status;
 
 import java.util.List;
 

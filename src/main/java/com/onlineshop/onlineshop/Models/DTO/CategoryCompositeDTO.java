@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO;
 
-import com.onlineshop.onlineshop.Models.Category;
+import com.onlineshop.onlineshop.Models.EverythingElse.Category;
 
 public class CategoryCompositeDTO {
     private int id;

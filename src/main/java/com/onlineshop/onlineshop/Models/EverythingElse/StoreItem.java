@@ -1,7 +1,8 @@
-package com.onlineshop.onlineshop.Models;
+package com.onlineshop.onlineshop.Models.EverythingElse;
 
 import com.onlineshop.onlineshop.Models.DTO.StoreItem.StoreItemNestedDTO;
 import com.onlineshop.onlineshop.Models.DTO.StoreItem.StoreItemViewDTO;
+import com.onlineshop.onlineshop.Models.Products.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 @Entity

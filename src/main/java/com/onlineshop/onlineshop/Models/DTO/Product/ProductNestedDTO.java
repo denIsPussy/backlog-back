@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO.Product;
 
-import com.onlineshop.onlineshop.Models.Product;
+import com.onlineshop.onlineshop.Models.Products.Product;
 
 public class ProductNestedDTO {
     private int id;

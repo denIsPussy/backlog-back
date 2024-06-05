@@ -1,8 +1,8 @@
 //package com.onlineshop.onlineshop.Services;
 //
-//import com.onlineshop.onlineshop.Models.CartItem;
-//import com.onlineshop.onlineshop.Models.Notification;
-//import com.onlineshop.onlineshop.Models.User;
+//import com.onlineshop.onlineshop.Models.EverythingElse.CartItem;
+//import com.onlineshop.onlineshop.Models.EverythingElse.Notification;
+//import com.onlineshop.onlineshop.Models.EverythingElse.User;
 //import com.onlineshop.onlineshop.Repositories.CartItemRepository;
 //import com.onlineshop.onlineshop.Repositories.NotificationRepository;
 //import org.springframework.beans.factory.annotation.Autowired;

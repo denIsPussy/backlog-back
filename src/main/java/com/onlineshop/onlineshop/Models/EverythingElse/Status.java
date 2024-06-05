@@ -1,11 +1,11 @@
-package com.onlineshop.onlineshop.Models;
+package com.onlineshop.onlineshop.Models.EverythingElse;
 
-import com.onlineshop.onlineshop.Models.DTO.PaymentMethodNestedDTO;
+import com.onlineshop.onlineshop.Models.DTO.StatusNestedDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 @Entity
-@Table(name = "paymentMethods")
-public class PaymentMethod {
+@Table(name = "statuses")
+public class Status {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,13 +15,13 @@ public class PaymentMethod {
     @NotNull
     private String description;
 
-    public PaymentMethod(){
+    public Status(){
 
     }
 
-    public PaymentMethod(PaymentMethodNestedDTO paymentMethodNestedDTO) {
-        this.id = paymentMethodNestedDTO.getId();
-        this.description = paymentMethodNestedDTO.getDescription();
+    public Status(StatusNestedDTO statusNestedDTO) {
+        this.id = statusNestedDTO.getId();
+        this.description = statusNestedDTO.getDescription();
     }
 
     public int getId() {
