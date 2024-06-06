@@ -39,49 +39,9 @@ public class UserController {
         return new ShoppingCartDTO(userService.getShopCartByUsername(userDetails.getUsername()));
     }
 
-    @PostMapping(path="/clear")
-    public void clear(){
-
-    }
-
     @DeleteMapping(path="/update")
     public void update(@RequestBody UserDTO userDTO){
 
-    }
-
-    @PostMapping(path="/addToCart")
-    public void addToCart(@RequestBody CartItemCreateDTO cartItemCreateDTO){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(userDetails.getUsername());
-        ShoppingCart shoppCart = user.getShoppingCart();
-        //shoppingCartService.addToCart(shoppCart, new CartItem(cartItemCreateDTO));
-        //return new ShoppingCartDTO(newCart);
-    }
-    @DeleteMapping(path="/removeFromCart/{id}")
-    public void removeFromCart(@PathVariable int productId){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(userDetails.getUsername());
-        ShoppingCart shoppCart = user.getShoppingCart();
-        //shoppingCartService.removeFromCart(shoppCart, productId);
-        //return new ShoppingCartDTO(newCart);
-    }
-
-    @PostMapping(path="/reduceProductQuantityInCart/{id}")
-    public void reduceProductQuantityInCart(@PathVariable("id") int productId){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(userDetails.getUsername());
-        ShoppingCart shoppCart = user.getShoppingCart();
-        shoppingCartService.reduceProductQuantity(shoppCart, productId);
-        //return new ShoppingCartDTO(newCart);
-    }
-
-    @PostMapping(path="/increaseProductQuantityInCart/{id}")
-    public void increaseProductQuantityInCart(@PathVariable("id") int productId, @RequestParam String username){
-        //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(username);
-        ShoppingCart shoppCart = user.getShoppingCart();
-        shoppingCartService.increaseProductQuantity(shoppCart, productId);
-        //return new ShoppingCartDTO(newCart);
     }
 
 //    @PostMapping(path="/email")

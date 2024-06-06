@@ -52,6 +52,9 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<ProductAttribute> productAttributes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> reviewList = new ArrayList<>();
     //
 //    @OneToMany(mappedBy = "product")
 //    private List<CartItem> cartItems;
@@ -183,6 +186,14 @@ public class Product {
 
     public void setProductAttributes(List<ProductAttribute> productAttributes) {
         this.productAttributes = productAttributes;
+    }
+
+    public List<Review> getReviewList() {
+        return reviewList;
+    }
+
+    public void setReviewList(List<Review> reviewList) {
+        this.reviewList = reviewList;
     }
 
     //

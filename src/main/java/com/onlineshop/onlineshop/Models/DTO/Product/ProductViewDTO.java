@@ -3,6 +3,7 @@ package com.onlineshop.onlineshop.Models.DTO.Product;
 import com.onlineshop.onlineshop.Models.DTO.AttributeNestedDTO;
 import com.onlineshop.onlineshop.Models.DTO.CategoryCompositeDTO;
 import com.onlineshop.onlineshop.Models.DTO.DiscountNestedDTO;
+import com.onlineshop.onlineshop.Models.DTO.ReviewDTO;
 import com.onlineshop.onlineshop.Models.DTO.StoreItem.StoreItemNestedDTO;
 import com.onlineshop.onlineshop.Models.Products.Product;
 
@@ -19,6 +20,7 @@ public class ProductViewDTO {
     private CategoryCompositeDTO category;
     private List<StoreItemNestedDTO> storeList;
     private List<AttributeNestedDTO> attributeList;
+    private List<ReviewDTO> reviewList;
 
     public ProductViewDTO() {
     }
@@ -34,6 +36,7 @@ public class ProductViewDTO {
         this.storeList = product.getStoreList().stream().map(StoreItemNestedDTO::new).toList();
         this.category = new CategoryCompositeDTO(product.getCategory());
         this.attributeList = product.getProductAttributes().stream().map(AttributeNestedDTO::new).toList();
+        this.reviewList = product.getReviewList().stream().map(ReviewDTO::new).toList();
     }
 
     public int getId() {
@@ -76,5 +79,7 @@ public class ProductViewDTO {
         return attributeList;
     }
 
-
+    public List<ReviewDTO> getReviewList() {
+        return reviewList;
+    }
 }

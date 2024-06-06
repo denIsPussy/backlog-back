@@ -76,11 +76,6 @@ public class ShoppingCartController {
         //return new ShoppingCartDTO(newCart);
     }
 
-    @PutMapping(path="/updateCartItems")
-    public void updateCartItems(@RequestBody CartItemViewDTO cartItemViewDTO){
-
-    }
-
     @GetMapping(path="/byUser/{id}")
     public ShoppingCartDTO getByUserId(@PathVariable int userId){
         return null;
