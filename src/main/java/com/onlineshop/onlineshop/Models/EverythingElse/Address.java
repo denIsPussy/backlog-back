@@ -32,6 +32,14 @@ public class Address {
     @NotNull
     private int apartment;
 
+    @Column(name = "latitude")
+    @NotNull
+    private String latitude ;
+
+    @Column(name = "longitude")
+    @NotNull
+    private String longitude ;
+
     public Address(){
 
     }
@@ -91,5 +99,21 @@ public class Address {
 
     public void setApartment(int apartment) {
         this.apartment = apartment;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

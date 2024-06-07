@@ -9,6 +9,8 @@ public class AddressNestedDTO {
     private int houseNumber;
     private int postalCode;
     private int apartment;
+    private String latitude;
+    private String longitude;
 
     public AddressNestedDTO(){
 
@@ -21,6 +23,8 @@ public class AddressNestedDTO {
         this.houseNumber = address.getHouseNumber();
         this.postalCode = address.getPostalCode();
         this.apartment = address.getApartment();
+        this.latitude = address.getLatitude();
+        this.longitude = address.getLongitude();
     }
 
     public int getId() {
@@ -45,5 +49,13 @@ public class AddressNestedDTO {
 
     public int getApartment() {
         return apartment;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
     }
 }

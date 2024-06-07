@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.EverythingElse;
 
-import com.onlineshop.onlineshop.Models.DTO.ShippingMethodNestedDTO;
+import com.onlineshop.onlineshop.Models.DTO.ShippingMethodCompositeDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -20,7 +20,7 @@ public class ShippingMethod {
 
     }
 
-    public ShippingMethod(ShippingMethodNestedDTO shippingMethodNestedDTO) {
+    public ShippingMethod(ShippingMethodCompositeDTO shippingMethodNestedDTO) {
         this.id = shippingMethodNestedDTO.getId();
         this.description = shippingMethodNestedDTO.getDescription();
     }

@@ -1,10 +1,14 @@
 package com.onlineshop.onlineshop.Models.DTO.Order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemViewDTO;
 import com.onlineshop.onlineshop.Models.EverythingElse.Order;
 import com.onlineshop.onlineshop.Models.EverythingElse.PaymentMethod;
 import com.onlineshop.onlineshop.Models.EverythingElse.ShippingMethod;
 import com.onlineshop.onlineshop.Models.EverythingElse.Status;
+import com.onlineshop.onlineshop.Services.AuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -17,6 +21,9 @@ public class OrderViewDTO {
     private PaymentMethod paymentMethod;
     private ShippingMethod shippingMethod;
     private List<OrderItemViewDTO> orderItems;
+    @JsonIgnore
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
 
     public OrderViewDTO() {
     }
@@ -24,12 +31,14 @@ public class OrderViewDTO {
     public OrderViewDTO(Order order) {
         this.id = order.getId();
         this.totalAmount = order.getTotalAmount();
-        this.creationDate = order.getCreationDate();
-        this.completionDate = order.getCompletionDate();
+        this.creationDate = order.getCreationDate().toString();
+        this.completionDate = order.getCompletionDate() != null ? order.getCompletionDate().toString() : null;
         this.status = order.getStatus();
         this.paymentMethod = order.getPaymentMethod();
         this.shippingMethod = order.getShippingMethod();
+        logger.info("MODEL orderItems of order 1 is null: {}", order.getOrderItems() == null);
         this.orderItems = order.getOrderItems().stream().map(OrderItemViewDTO::new).toList();
+        logger.info("MODEL check orderItems of order 1: {}", order.getOrderItems().get(0).getQuantity());
     }
 
     public int getId() {

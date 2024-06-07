@@ -1,9 +1,11 @@
 package com.onlineshop.onlineshop.Models.EverythingElse;
 
+import com.onlineshop.onlineshop.Models.DTO.Order.OrderCreateDTO;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderViewDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -20,10 +22,10 @@ public class Order {
 
     @Column(name = "creationDate")
     @NotNull
-    private String creationDate;
+    private LocalDateTime creationDate;
 
     @Column(name = "completionDate")
-    private String completionDate;
+    private LocalDateTime completionDate;
 
     @JoinColumn(name = "status_id")
     @ManyToOne
@@ -47,12 +49,19 @@ public class Order {
     public Order(OrderViewDTO orderViewDTO) {
         this.id = orderViewDTO.getId();
         this.totalAmount = orderViewDTO.getTotalAmount();
-        this.creationDate = orderViewDTO.getCreationDate();
-        this.completionDate = orderViewDTO.getCompletionDate();
+        //this.creationDate = orderViewDTO.getCreationDate();
+        //this.completionDate = orderViewDTO.getCompletionDate();
         this.status = orderViewDTO.getStatus();
         this.paymentMethod = orderViewDTO.getPaymentMethod();
         this.shippingMethod = orderViewDTO.getShippingMethod();
         this.orderItems = orderViewDTO.getOrderItems().stream().map(OrderItem::new).toList();
+    }
+
+    public Order(OrderCreateDTO orderCreateDTO) {
+        this.totalAmount = orderCreateDTO.getTotalAmount();
+        this.paymentMethod = new PaymentMethod(orderCreateDTO.getPaymentMethod());
+        this.shippingMethod = new ShippingMethod(orderCreateDTO.getShippingMethod());
+        //this.orderItems = orderCreateDTO.getOrderItems().stream().map(OrderItem::new).toList();
     }
 
     public int getId() {
@@ -71,19 +80,19 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
-    public String getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(String creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
-    public String getCompletionDate() {
+    public LocalDateTime getCompletionDate() {
         return completionDate;
     }
 
-    public void setCompletionDate(String completionDate) {
+    public void setCompletionDate(LocalDateTime completionDate) {
         this.completionDate = completionDate;
     }
 

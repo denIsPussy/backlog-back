@@ -14,10 +14,6 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    public NotificationService(NotificationRepository notificationRepository) {
-        this.notificationRepository = notificationRepository;
-    }
-
     public void create(Notification notification){
         return;
     }

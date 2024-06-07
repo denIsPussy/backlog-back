@@ -2,15 +2,15 @@ package com.onlineshop.onlineshop.Models.DTO;
 
 import com.onlineshop.onlineshop.Models.EverythingElse.PaymentMethod;
 
-public class PaymentMethodNestedDTO {
+public class PaymentMethodCompositeDTO {
     private int id;
     private String description;
 
-    public PaymentMethodNestedDTO() {
+    public PaymentMethodCompositeDTO() {
 
     }
 
-    public PaymentMethodNestedDTO(PaymentMethod paymentMethod) {
+    public PaymentMethodCompositeDTO(PaymentMethod paymentMethod) {
         this.id = paymentMethod.getId();
         this.description = paymentMethod.getDescription();
     }

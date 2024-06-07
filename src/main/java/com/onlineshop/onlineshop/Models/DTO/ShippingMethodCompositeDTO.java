@@ -2,15 +2,15 @@ package com.onlineshop.onlineshop.Models.DTO;
 
 import com.onlineshop.onlineshop.Models.EverythingElse.ShippingMethod;
 
-public class ShippingMethodNestedDTO {
+public class ShippingMethodCompositeDTO {
     private int id;
     private String description;
 
-    public ShippingMethodNestedDTO() {
+    public ShippingMethodCompositeDTO() {
 
     }
 
-    public ShippingMethodNestedDTO(ShippingMethod shippingMethod) {
+    public ShippingMethodCompositeDTO(ShippingMethod shippingMethod) {
         this.id = shippingMethod.getId();
         this.description = shippingMethod.getDescription();
     }

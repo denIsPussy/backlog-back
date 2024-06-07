@@ -1,5 +1,6 @@
 package com.onlineshop.onlineshop.Models.EverythingElse;
 
+import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemCreateDTO;
 import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemViewDTO;
 import com.onlineshop.onlineshop.Models.Products.Product;
 import jakarta.persistence.*;
@@ -22,6 +23,13 @@ public class OrderItem {
 
     private int quantity;
 
+
+    public OrderItem(Order order, int quantity, Product product) {
+        this.order = order;
+        this.quantity = quantity;
+        this.product = product;
+    }
+
     public OrderItem(){
     }
 
@@ -30,6 +38,11 @@ public class OrderItem {
         this.product = new Product(orderItemViewDTO.getProduct());
         this.quantity = orderItemViewDTO.getQuantity();
     }
+
+//    public OrderItem(OrderItemCreateDTO orderItemCreateDTO){
+//        this.product = new Product(orderItemCreateDTO.getProductId());
+//        this.quantity = orderItemCreateDTO.getQuantity();
+//    }
 
     public int getId() {
         return id;

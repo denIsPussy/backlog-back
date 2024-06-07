@@ -5,7 +5,7 @@ import com.onlineshop.onlineshop.Models.EverythingElse.OrderItem;
 
 public class OrderItemViewDTO {
     private int id;
-        private ProductNestedDTO product;
+    private ProductNestedDTO product;
     private int quantity;
 
     public OrderItemViewDTO(){
