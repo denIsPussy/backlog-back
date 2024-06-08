@@ -1,10 +1,8 @@
 package com.onlineshop.onlineshop.Controllers;
 
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderViewDTO;
-import com.onlineshop.onlineshop.Models.DTO.ShopCart.CartItemCreateDTO;
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.ShoppingCartDTO;
-import com.onlineshop.onlineshop.Models.DTO.User.UserDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.ShoppingCart;
+import com.onlineshop.onlineshop.Models.DTO.User.UserViewDTO;
 import com.onlineshop.onlineshop.Models.EverythingElse.User;
 import com.onlineshop.onlineshop.Services.ProductService;
 import com.onlineshop.onlineshop.Services.ShoppingCartService;
@@ -40,8 +38,22 @@ public class UserController {
     }
 
     @DeleteMapping(path="/update")
-    public void update(@RequestBody UserDTO userDTO){
+    public void update(@RequestBody UserViewDTO userDTO){
 
+    }
+
+    @GetMapping(path="/deposit")
+    public float getDeposit(){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(userDetails.getUsername());
+        return user.getDeposit();
+    }
+
+    @GetMapping(path="/getUserInfo")
+    public UserViewDTO getUserInfo(){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(userDetails.getUsername());
+        return new UserViewDTO(user);
     }
 
 //    @PostMapping(path="/email")
@@ -50,12 +62,12 @@ public class UserController {
 //    }
 
     @GetMapping(path="/setChildMode")
-    public UserDTO setChildMode(@RequestParam boolean isEnabled) {
+    public UserViewDTO setChildMode(@RequestParam boolean isEnabled) {
         return null;
     }
 
     @GetMapping(path="/configureNotifications")
-    public UserDTO configureNotifications(@RequestParam boolean isEnabled){
+    public UserViewDTO configureNotifications(@RequestParam boolean isEnabled){
         return null;
     }
 }
