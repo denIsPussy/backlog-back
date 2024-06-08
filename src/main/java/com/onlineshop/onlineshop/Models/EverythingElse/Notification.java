@@ -1,8 +1,12 @@
 package com.onlineshop.onlineshop.Models.EverythingElse;
 
 import com.onlineshop.onlineshop.Models.DTO.NotificationDTO;
+import com.onlineshop.onlineshop.Models.DTO.NotificationUpdateDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "notifications")
 public class Notification {
@@ -19,19 +23,25 @@ public class Notification {
     @NotNull
     private String text;
 
-    @Column(name = "date")
+    @Column(name = "isRead")
     @NotNull
-    private String date;
+    private boolean isRead = false;
+
+    @Column(name = "createdAt")
+    @NotNull
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id") // Это указывает, что столбец 'user_id' используется для присоединения к таблице User
+    private User user;
 
     public Notification(){
 
     }
 
-    public Notification(NotificationDTO notificationDTO) {
-        this.id = notificationDTO.getId();
-        this.header = notificationDTO.getHeader();
-        this.text = notificationDTO.getText();
-        this.date = notificationDTO.getDate();
+    public Notification(NotificationUpdateDTO notificationUpdateDTO) {
+        this.id = notificationUpdateDTO.getId();
+        this.isRead = notificationUpdateDTO.isRead();
     }
 
     public int getId() {
@@ -58,11 +68,35 @@ public class Notification {
         this.text = text;
     }
 
-    public String getDate() {
-        return date;
+    public LocalDateTime getDate() {
+        return createdAt;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setDate(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

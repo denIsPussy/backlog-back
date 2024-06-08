@@ -12,7 +12,7 @@ public class AddressNestedDTO {
     private String latitude;
     private String longitude;
 
-    public AddressNestedDTO(){
+    public AddressNestedDTO(){  
 
     }
 

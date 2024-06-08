@@ -14,8 +14,8 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    public void create(Notification notification){
-        return;
+    public Notification create(Notification notification){
+        return notificationRepository.save(notification);
     }
 
     public List<Notification> getAll(){
@@ -27,6 +27,6 @@ public class NotificationService {
     }
 
     public List<Notification> getByUserId(int userId){
-        return null;
+        return notificationRepository.findByUserId(userId);
     }
 }

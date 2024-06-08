@@ -6,7 +6,7 @@ public class NotificationDTO {
     private int id;
     private String header;
     private String text;
-    private String date;
+    private boolean isRead;
 
     public NotificationDTO(){
 
@@ -16,7 +16,7 @@ public class NotificationDTO {
         this.id = notification.getId();
         this.header = notification.getHeader();
         this.text = notification.getText();
-        this.date = notification.getDate();
+        this.isRead = notification.isRead();
     }
 
     public int getId() {
@@ -31,7 +31,7 @@ public class NotificationDTO {
         return text;
     }
 
-    public String getDate() {
-        return date;
+    public boolean isRead() {
+        return isRead;
     }
 }

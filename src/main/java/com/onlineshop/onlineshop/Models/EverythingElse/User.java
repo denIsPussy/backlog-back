@@ -74,9 +74,9 @@ public class User{
     @OneToMany()
     private List<Order> orderList = new ArrayList<>();
 
-    @JoinColumn(name = "user_id")
-    @OneToMany()
+    @OneToMany(mappedBy = "user")
     private List<Notification> notificationList = new ArrayList<>();
+
 
     public User(){
 
@@ -99,7 +99,7 @@ public class User{
         this.areNotificationsEnabled = userDTO.isAreNotificationsEnabled();
         this.shoppingCart = userDTO.getShoppingCart();
         this.orderList = userDTO.getOrderList().stream().map(Order::new).toList();
-        this.notificationList = userDTO.getNotificationList().stream().map(Notification::new).toList();
+        //this.notificationList = userDTO.getNotificationList().stream().map(Notification::new).toList();
     }
 
     public User (SignUpDTO signUpDTO) {

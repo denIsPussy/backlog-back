@@ -56,7 +56,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 // Настройка правил авторизации
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/authenticate", "/register", "/exchangeSilentAuthToken", "/verifyTwoFactorCode", "/products/**", "/cart/**", "/order/**").permitAll()
+                        .requestMatchers("/authenticate", "/register", "/exchangeSilentAuthToken", "/notifications/**", "/verifyTwoFactorCode", "/products/**", "/cart/**", "/order/**").permitAll()
                         .anyRequest().authenticated())
                 // Управление сессией
                 .sessionManagement(session -> session
