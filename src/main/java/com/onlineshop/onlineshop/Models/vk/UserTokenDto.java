@@ -1,13 +1,18 @@
 package com.onlineshop.onlineshop.Models.vk;
 
-public class UserTokenDto extends  ApiResponse {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class UserTokenDto extends ApiResponse {
     private String token;
     private String username;
+    @JsonProperty("isChildModeEnabled")
+    private boolean isChildModeEnabled;
 
-    public UserTokenDto(String token, String username, boolean success, String message) {
+    public UserTokenDto(String token, String username, boolean success, String message, boolean isChildModeEnabled) {
         super(success, message);
         this.token = token;
         this.username = username;
+        this.isChildModeEnabled = isChildModeEnabled;
     }
 
     public String getToken() {
@@ -24,5 +29,13 @@ public class UserTokenDto extends  ApiResponse {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean isChildModeEnabled() {
+        return isChildModeEnabled;
+    }
+
+    public void setChildModeEnabled(boolean childModeEnabled) {
+        isChildModeEnabled = childModeEnabled;
     }
 }

@@ -104,7 +104,7 @@ public class AuthService{
                     }
                 }
                 userDetails = userService.loadUserByUsername(user.getUsername());
-                return new UserTokenDto(jwtUtil.generateToken(userDetails), user.getUsername(), true, "token");
+                return new UserTokenDto(jwtUtil.generateToken(userDetails), user.getUsername(), true, "token", user.isChildModeEnabled());
             } catch (Exception e) {
                 throw new CompletionException(new AuthenticationFailureException(e.getMessage()));
             }
@@ -115,7 +115,7 @@ public class AuthService{
         User user = userService.getByUsername(twoFactorCodeDTO.getUsername());
         if (verify2FACode(twoFactorCodeDTO.getCode(), user)) {
             UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
-            return new UserTokenDto(jwtUtil.generateToken(userDetails), user.getUsername(), true, "2FA code");
+            return new UserTokenDto(jwtUtil.generateToken(userDetails), user.getUsername(), true, "2FA code", user.isChildModeEnabled());
         } else {
             return new ApiResponse(false, "Неверный 2FA код"){};
         }

@@ -1,5 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO.User;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderViewDTO;
 import com.onlineshop.onlineshop.Models.EverythingElse.User;
 
@@ -18,6 +19,7 @@ public class UserViewDTO {
 //    private String twoFactorCode;
 //    private LocalDateTime twoFactorExpiration;
     private float deposit;
+    @JsonProperty("isChildModeEnabled")
     private boolean isChildModeEnabled;
     private boolean areNotificationsEnabled;
 //    private ShoppingCart shoppingCart;
