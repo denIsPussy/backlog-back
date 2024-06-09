@@ -1,11 +1,13 @@
 package com.onlineshop.onlineshop.Models.DTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onlineshop.onlineshop.Models.EverythingElse.Notification;
 
 public class NotificationDTO {
     private int id;
     private String header;
     private String text;
+    @JsonProperty("isRead")
     private boolean isRead;
 
     public NotificationDTO(){

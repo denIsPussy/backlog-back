@@ -17,8 +17,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -103,6 +105,6 @@ public class OrderService {
     public List<Order> getByUsername(String username){
         Optional<User> findUser = userRepository.findByUsername(username);
         User user = findUser.orElseThrow();
-        return user.getOrderList();
+        return user.getOrderList().stream().sorted((o1, o2) -> o2.getCreationDate().compareTo(o1.getCreationDate())).collect(Collectors.toList());
     }
 }

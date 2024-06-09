@@ -12,8 +12,10 @@ import com.onlineshop.onlineshop.Models.EverythingElse.User;
 import com.onlineshop.onlineshop.Models.vk.ApiResponse;
 import com.onlineshop.onlineshop.Models.vk.UserTokenDto;
 import com.onlineshop.onlineshop.Models.vk.VkUserPartialDto;
+import com.onlineshop.onlineshop.PasswordGenerator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,6 +49,9 @@ public class AuthService{
     private JwtUtil jwtUtil;
     @Autowired
     private ApiService apiService;
+    @Lazy
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
@@ -133,6 +138,16 @@ public class AuthService{
             throw new Exception(e.getMessage());
         }
         emailService.sendSimpleMessage(findUser.getEmail(), "Your 2FA Code", "Your code is: " + code);
+    }
+
+    public ApiResponse resetPassword() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(userDetails.getUsername());
+        String newPassword = PasswordGenerator.generatePassword(8);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userService.update(user);
+        emailService.sendSimpleMessage(user.getEmail(), "Сброс пароля", "Ваш новый пароль: " + newPassword + ". Вы можете сменить пароль в личном профиле.");
+        return new ApiResponse(true, "Пароль успешно сброшен. Ожидайте уведомления на почту"){};
     }
 
 //    public ApiResponse confirmationAction(ConfirmationCodeDTO confirmationCodeDTO) {

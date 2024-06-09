@@ -14,6 +14,7 @@ import com.onlineshop.onlineshop.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,16 +62,25 @@ public class UserController {
         return userService.getOrders(username).stream().map(OrderViewDTO::new).toList();
     }
 
+    @GetMapping(path="/checkingForReview/{productId}")
+    public ApiResponse checkingForReview(@PathVariable int productId){
+        return userService.checkingForReview(productId);
+    }
+
     @GetMapping(path="/getShopCart")
     public ShoppingCartDTO getShopCart(){
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ShoppingCartDTO(userService.getShopCartByUsername(userDetails.getUsername()));
     }
 
+    @PostMapping(path="/topUpDeposit")
+    public ApiResponse topUpDeposit(@RequestParam int amount){
+        return userService.topUpDeposit(amount);
+    }
+
     @GetMapping(path="/containsInCart/{productId}")
     public ApiResponse containsInCart(@PathVariable int productId){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userService.containsInCart(userDetails.getUsername(), productId);
+        return userService.containsInCart(productId);
     }
 
     @DeleteMapping(path="/update")

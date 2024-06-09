@@ -7,6 +7,8 @@ import com.onlineshop.onlineshop.Models.DTO.UserUpdateDTO;
 import com.onlineshop.onlineshop.Models.EverythingElse.Order;
 import com.onlineshop.onlineshop.Models.EverythingElse.ShoppingCart;
 import com.onlineshop.onlineshop.Models.EverythingElse.User;
+import com.onlineshop.onlineshop.Models.Products.Product;
+import com.onlineshop.onlineshop.Models.Products.Review;
 import com.onlineshop.onlineshop.Models.vk.ApiResponse;
 import com.onlineshop.onlineshop.Repositories.UserRepository;
 import com.onlineshop.onlineshop.Models.vk.VkApiResponse;
@@ -32,6 +34,8 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ProductService productService;
     @Lazy
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -160,7 +164,7 @@ public class UserService implements UserDetailsService {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
         if (passwordEncoder.matches(passwordUpdateDTO.getOldPassword(), user.getPassword())) {
-            user.setPassword(passwordUpdateDTO.getNewPassword());
+            user.setPassword(passwordEncoder.encode(passwordUpdateDTO.getNewPassword()));
             update(user);
             return new ApiResponse(true, "Пароль успешно изменен"){};
         }
@@ -243,8 +247,9 @@ public class UserService implements UserDetailsService {
         return new ApiResponse(false, "Неверный пароль"){};
     }
 
-    public ApiResponse containsInCart(String username, int productId) {
-        User user = getByUsername(username);
+    public ApiResponse containsInCart(int productId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = getByUsername(userDetails.getUsername());
         boolean isContain = user.getShoppingCart().getCartItems().stream()
                 .anyMatch(item -> item.getProduct().getId() == productId);
         if (isContain) {
@@ -252,5 +257,21 @@ public class UserService implements UserDetailsService {
         } else {
             return new ApiResponse(false, "Cart not contain the product") {};
         }
+    }
+
+    public ApiResponse checkingForReview(int productId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = getByUsername(userDetails.getUsername());
+        Product product = productService.getById(productId);
+        List<Review> reviews = product.getReviewList();
+        Review review = reviews.stream().filter(item -> item.getUser().getId() == user.getId()).findFirst().orElseThrow();
+        return new ApiResponse(true, String.valueOf(review.getId())){};
+    }
+
+    public ApiResponse topUpDeposit(int amount) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = getByUsername(userDetails.getUsername());
+        user.setDeposit(user.getDeposit() + amount);
+        return new ApiResponse(true,"Баланс пополнен"){};
     }
 }

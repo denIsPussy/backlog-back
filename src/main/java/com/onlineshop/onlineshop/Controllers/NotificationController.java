@@ -9,9 +9,7 @@ import com.onlineshop.onlineshop.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +33,18 @@ public class NotificationController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(userDetails.getUsername());
         return notificationService.getByUserId(user.getId()).stream().map(NotificationDTO::new).toList();
+    }
+
+    @GetMapping("/new")
+    public List<NotificationDTO> getNewByUser() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(userDetails.getUsername());
+        return notificationService.getNewByUserId(user.getId()).stream().map(NotificationDTO::new).toList();
+    }
+
+    @PostMapping("/read/{notificationId}")
+    public List<NotificationDTO> read(@PathVariable int notificationId) {
+        return notificationService.read(notificationId).stream().map(NotificationDTO::new).toList();
     }
 
     @GetMapping("/generate-notification")

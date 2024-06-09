@@ -60,6 +60,11 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse(true,"Регистрация прошла успешно!"){});
     }
 
+    @PostMapping("/resetPassword")
+    public ResponseEntity<ApiResponse> changePassword() {
+        return ResponseEntity.ok(authService.resetPassword());
+    }
+
     @PostMapping("/authenticate")
     public CompletableFuture<ResponseEntity<ApiResponse>> authenticate(@RequestBody AuthRequest request) {
         return authService.authenticateUser(request)
