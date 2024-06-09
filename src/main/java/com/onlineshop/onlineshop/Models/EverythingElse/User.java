@@ -1,7 +1,6 @@
 package com.onlineshop.onlineshop.Models.EverythingElse;
 
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
-import com.onlineshop.onlineshop.Models.DTO.User.UserViewDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -48,11 +47,11 @@ public class User{
     @NotNull
     private boolean isTwoFactorEnabled = true;
 
-    @Column(name = "twoFactorCode")
-    private String twoFactorCode;
+    @Column(name = "confirmationCode")
+    private String confirmationCode;
 
-    @Column(name = "twoFactorExpiration")
-    private LocalDateTime twoFactorExpiration;
+    @Column(name = "confirmationCodeExpiration")
+    private LocalDateTime confirmationCodeExpiration;
 
     @Column(name = "deposit")
     @NotNull
@@ -120,8 +119,8 @@ public class User{
         this.email = user.getEmail();
         this.deposit = user.getDeposit();
         this.isTwoFactorEnabled = user.isTwoFactorEnabled();
-        this.twoFactorCode = user.getTwoFactorCode();
-        this.twoFactorExpiration = user.getTwoFactorExpiration();
+        this.confirmationCode = user.getConfirmationCode();
+        this.confirmationCodeExpiration = user.getConfirmationCodeExpiration();
         this.isChildModeEnabled = user.isChildModeEnabled();
         this.areNotificationsEnabled = user.isAreNotificationsEnabled();
         this.shoppingCart = user.getShoppingCart();
@@ -201,20 +200,20 @@ public class User{
         isTwoFactorEnabled = twoFactorEnabled;
     }
 
-    public String getTwoFactorCode() {
-        return twoFactorCode;
+    public String getConfirmationCode() {
+        return confirmationCode;
     }
 
-    public void setTwoFactorCode(String twoFactorCode) {
-        this.twoFactorCode = twoFactorCode;
+    public void setConfirmationCode(String confirmationCode) {
+        this.confirmationCode = confirmationCode;
     }
 
-    public LocalDateTime getTwoFactorExpiration() {
-        return twoFactorExpiration;
+    public LocalDateTime getConfirmationCodeExpiration() {
+        return confirmationCodeExpiration;
     }
 
-    public void setTwoFactorExpiration(LocalDateTime twoFactorExpiration) {
-        this.twoFactorExpiration = twoFactorExpiration;
+    public void setConfirmationCodeExpiration(LocalDateTime confirmationCodeExpiration) {
+        this.confirmationCodeExpiration = confirmationCodeExpiration;
     }
 
     public float getDeposit() {

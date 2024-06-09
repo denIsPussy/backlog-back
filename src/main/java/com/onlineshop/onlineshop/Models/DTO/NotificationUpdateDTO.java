@@ -6,6 +6,7 @@ import com.onlineshop.onlineshop.Models.EverythingElse.Notification;
 public class NotificationUpdateDTO {
     private int id;
     private boolean isRead;
+    private boolean isSystem;
 
     public NotificationUpdateDTO(){
 
@@ -22,5 +23,9 @@ public class NotificationUpdateDTO {
 
     public boolean isRead() {
         return isRead;
+    }
+
+    public boolean isSystem() {
+        return isSystem;
     }
 }

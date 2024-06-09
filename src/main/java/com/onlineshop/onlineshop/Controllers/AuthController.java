@@ -3,7 +3,7 @@ package com.onlineshop.onlineshop.Controllers;
 import com.onlineshop.onlineshop.ApiService;
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.AuthenticationFailureException;
 import com.onlineshop.onlineshop.JwtUtil;
-import com.onlineshop.onlineshop.Models.DTO.SilentAuthDTO;
+import com.onlineshop.onlineshop.Models.DTO.*;
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
 import com.onlineshop.onlineshop.Models.EverythingElse.TwoFactorCodeDTO;
 import com.onlineshop.onlineshop.Models.vk.ApiResponse;
@@ -41,21 +41,6 @@ public class AuthController {
         return ResponseEntity.ok(authService.validateAndGenerateJwt(twoFactorCodeDTO));
     }
 
-//    @PostMapping("/exchangeSilentAuthToken")
-//    public Mono<ResponseEntity<ApiResponse<?>>> exchangeSilentAuthToken(@RequestBody SilentAuthDTO silentAuthDTO) {
-//        return authService.exchangeAndRetrieveProfile(silentAuthDTO.getSilentToken(), silentAuthDTO.getUuid())
-//                .map(ResponseEntity::ok)
-//                .onErrorResume(AuthenticationFailureException.class, e -> {
-//                    ApiResponse<?> apiResponseWithData = ApiResponse.withMessage(e.getMessage());
-//                    return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponseWithData));
-//                })
-//                .onErrorResume(e ->
-//                        Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("df", "Внутренняя ошибка сервера")))
-//                )
-//                .defaultIfEmpty(ResponseEntity.badRequest().body(new ApiResponse("sds", "Неверный silent token или UUID")));
-//    }
-
-
     @PostMapping("/exchangeSilentAuthToken")
     public CompletableFuture<ResponseEntity<ApiResponse>> exchangeSilentAuthToken(@RequestBody SilentAuthDTO silentAuthDTO) {
         return authService.exchangeAndRetrieveProfile(silentAuthDTO.getSilentToken(), silentAuthDTO.getUuid())
@@ -69,32 +54,11 @@ public class AuthController {
                 });
     }
 
-
-
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> registerUser(@RequestBody SignUpDTO signUpDTO) {
         userService.registerUser(signUpDTO);
         return ResponseEntity.ok(new ApiResponse(true,"Регистрация прошла успешно!"){});
     }
-
-//    @PostMapping("/registerVk")
-//    public ResponseEntity<?> registerUserVk(@RequestBody SignUpDTO signUpDTO) {
-//        AuthResponse response = authService.registerUserVk(signUpDTO);
-//        return ResponseEntity.status(response.getJwt() == null ? HttpStatus.UNAUTHORIZED : HttpStatus.OK).body(response);
-//    }
-
-//    @PostMapping("/authenticate")
-//    public Mono<ResponseEntity<ApiResponse<String>>> authenticate(@RequestBody AuthRequest request) {
-//        return authService.authenticateUser(request)
-//                .map(ResponseEntity::ok)
-//                .onErrorResume(e -> {
-//                    if (e instanceof AuthenticationFailureException) {
-//                        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.withMessage(e.getMessage())));
-//                    } else {
-//                        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.withMessage("Внутренняя ошибка сервера")));
-//                    }
-//                });
-//    }
 
     @PostMapping("/authenticate")
     public CompletableFuture<ResponseEntity<ApiResponse>> authenticate(@RequestBody AuthRequest request) {

@@ -1,13 +1,18 @@
 package com.onlineshop.onlineshop.Controllers;
 
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderViewDTO;
+import com.onlineshop.onlineshop.Models.DTO.PasswordUpdateDTO;
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.ShoppingCartDTO;
+import com.onlineshop.onlineshop.Models.DTO.UpdateSettingsDTO;
 import com.onlineshop.onlineshop.Models.DTO.User.UserViewDTO;
+import com.onlineshop.onlineshop.Models.DTO.UserUpdateDTO;
 import com.onlineshop.onlineshop.Models.EverythingElse.User;
+import com.onlineshop.onlineshop.Models.vk.ApiResponse;
 import com.onlineshop.onlineshop.Services.ProductService;
 import com.onlineshop.onlineshop.Services.ShoppingCartService;
 import com.onlineshop.onlineshop.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +30,31 @@ public class UserController {
 //    private EmailService emailService;
     @Autowired
     private ShoppingCartService shoppingCartService;
+
+    @PostMapping("/changeUserData")
+    public ResponseEntity<ApiResponse> changeUserData(@RequestBody UserUpdateDTO userUpdateDTO) {
+        return ResponseEntity.ok(userService.changeUserData(userUpdateDTO));
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<ApiResponse> changePassword(@RequestBody PasswordUpdateDTO passwordUpdateDTO) {
+        return ResponseEntity.ok(userService.changePassword(passwordUpdateDTO));
+    }
+
+    @PostMapping("/settingChildMode")
+    public ResponseEntity<ApiResponse> settingChildMode(@RequestBody UpdateSettingsDTO updateSettingsDTO) {
+        return ResponseEntity.ok(userService.settingChildMode(updateSettingsDTO));
+    }
+
+    @PostMapping("/settingTwoFactorAuth")
+    public ResponseEntity<ApiResponse> settingTwoFactorAuth(@RequestBody UpdateSettingsDTO updateSettingsDTO) {
+        return ResponseEntity.ok(userService.settingTwoFactorAuth(updateSettingsDTO));
+    }
+
+    @PostMapping("/settingNotifications")
+    public ResponseEntity<ApiResponse> settingNotifications(@RequestBody UpdateSettingsDTO updateSettingsDTO) {
+        return ResponseEntity.ok(userService.settingNotifications(updateSettingsDTO));
+    }
 
     @GetMapping(path="/byUsername")
     public List<OrderViewDTO> getByUsername(@RequestParam String username){

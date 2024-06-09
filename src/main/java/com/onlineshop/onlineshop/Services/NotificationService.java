@@ -1,9 +1,12 @@
 package com.onlineshop.onlineshop.Services;
 
 import com.onlineshop.onlineshop.Models.EverythingElse.Notification;
+import com.onlineshop.onlineshop.Models.EverythingElse.User;
 import com.onlineshop.onlineshop.Repositories.NotificationRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +16,9 @@ import java.util.List;
 public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserService userService;
 
     public Notification create(Notification notification){
         return notificationRepository.save(notification);
@@ -27,6 +33,12 @@ public class NotificationService {
     }
 
     public List<Notification> getByUserId(int userId){
-        return notificationRepository.findByUserId(userId);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getByUsername(userDetails.getUsername());
+        List<Notification> notifications = notificationRepository.findByUserId(userId);
+        if (user.isAreNotificationsEnabled())
+            return notifications;
+        else
+            return notifications.stream().filter(Notification::isSystem).toList();
     }
 }

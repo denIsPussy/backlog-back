@@ -36,8 +36,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
+
     @Autowired
     JwtRequestFilter jwtAuthFilter;
+
     @Value("${allowed.origins}")
     private String[] allowedOrigins;
 
@@ -56,7 +58,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 // Настройка правил авторизации
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/authenticate", "/register", "/exchangeSilentAuthToken", "/notifications/**", "/verifyTwoFactorCode", "/products/**", "/cart/**", "/order/**").permitAll()
+                        .requestMatchers("/authenticate", "/register", "/exchangeSilentAuthToken", "/notifications/**", "/verifyTwoFactorCode", "/products/**", "/cart/**", "/order/**", "/user/**").permitAll()
                         .anyRequest().authenticated())
                 // Управление сессией
                 .sessionManagement(session -> session

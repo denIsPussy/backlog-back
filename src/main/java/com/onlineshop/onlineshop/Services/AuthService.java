@@ -3,6 +3,10 @@ import com.onlineshop.onlineshop.ApiService;
 import com.onlineshop.onlineshop.Controllers.AuthRequest;
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.AuthenticationFailureException;
 import com.onlineshop.onlineshop.JwtUtil;
+import com.onlineshop.onlineshop.Models.DTO.ConfirmationCodeDTO;
+import com.onlineshop.onlineshop.Models.DTO.PasswordUpdateDTO;
+import com.onlineshop.onlineshop.Models.DTO.UpdateSettingsDTO;
+import com.onlineshop.onlineshop.Models.DTO.UserUpdateDTO;
 import com.onlineshop.onlineshop.Models.EverythingElse.TwoFactorCodeDTO;
 import com.onlineshop.onlineshop.Models.EverythingElse.User;
 import com.onlineshop.onlineshop.Models.vk.ApiResponse;
@@ -13,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -41,27 +47,8 @@ public class AuthService{
     private JwtUtil jwtUtil;
     @Autowired
     private ApiService apiService;
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-//    public Mono<ApiResponse<?>> exchangeAndRetrieveProfile(String silentToken, String uuid) {
-//        return apiService.exchangeSilentAuthToken(silentToken, uuid)
-//                .flatMap(vkApiResponse -> {
-//                    User user = userService.getByVkId(vkApiResponse.getResponse().getUserId());
-//                    if (user != null) {
-//                        return authenticateUser(new AuthRequest(user.getUsername(), user.getPassword()))
-//                                .flatMap(jwtResponse -> Mono.just(ApiResponse.withData(jwtResponse))); // Убедитесь, что jwtResponse уже содержит тип VkAuthDto или другой подходящий тип
-//                    }
-//                    return apiService.getProfileInfo(vkApiResponse.getResponse().getAccessToken())
-//                            .map(profileInfo -> ApiResponse.withData(new VkAuthDto(
-//                                    vkApiResponse.getResponse().getUserId(),
-//                                    profileInfo.getResponse().get(0).getFirstName(),
-//                                    profileInfo.getResponse().get(0).getLastName(),
-//                                    false
-//                            )))
-//                            .onErrorResume(e -> Mono.error(new AuthenticationFailureException(e.getMessage())));
-//                })
-//                .onErrorResume(e -> Mono.error(new AuthenticationFailureException(e.getMessage())));
-//    }
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     @Async("taskExecutor")
     public CompletableFuture<ApiResponse> exchangeAndRetrieveProfile(String silentToken, String uuid) {
@@ -86,8 +73,6 @@ public class AuthService{
                     throw new CompletionException(new AuthenticationFailureException(e.getMessage()));
                 });
     }
-
-
 
     @Async("taskExecutor")
     public CompletableFuture<ApiResponse> authenticateUser(AuthRequest request) {
@@ -121,27 +106,6 @@ public class AuthService{
         });
     }
 
-
-
-
-
-//    public Mono<ApiResponse<String>> authenticateUser(AuthRequest request) {
-//        return Mono.fromCallable(() -> {
-//            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-//            final User user = userService.getByUsername(request.getUsername());
-//            if (user == null) throw new UsernameNotFoundException("Пользователь с таким именем не найден.");
-//            if (user.isTwoFactorEnabled()) {
-//                generateAndSend2FACode(user.getUsername());
-//                return ApiResponse.<String>withMessage("Код 2FA отправлен на ваш электронный адрес. Пожалуйста, подтвердите, чтобы завершить авторизацию.");
-//            }
-//            final UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
-//            final String jwt = jwtUtil.generateToken(userDetails);
-//            return ApiResponse.withData(jwt);
-//        }).onErrorMap(e -> new AuthenticationFailureException(e.getMessage()));
-//    }
-
-
-
     public ApiResponse validateAndGenerateJwt(TwoFactorCodeDTO twoFactorCodeDTO) {
         User user = userService.getByUsername(twoFactorCodeDTO.getUsername());
         if (verify2FACode(twoFactorCodeDTO.getCode(), user)) {
@@ -153,15 +117,15 @@ public class AuthService{
     }
 
     public boolean verify2FACode(String code, User user){
-        return user.getTwoFactorCode().equals(code) &&
-                user.getTwoFactorExpiration().isAfter(LocalDateTime.now());
+        return user.getConfirmationCode().equals(code) &&
+                user.getConfirmationCodeExpiration().isAfter(LocalDateTime.now());
     }
 
     public void generateAndSend2FACode(String username) throws Exception {
         String code = String.format("%06d", new Random().nextInt(999999));
         User findUser = userService.getByUsername(username);
-        findUser.setTwoFactorCode(code);
-        findUser.setTwoFactorExpiration(LocalDateTime.now().plusMinutes(10));
+        findUser.setConfirmationCode(code);
+        findUser.setConfirmationCodeExpiration(LocalDateTime.now().plusMinutes(10));
         try{
             userService.update(findUser);
         }
@@ -170,4 +134,9 @@ public class AuthService{
         }
         emailService.sendSimpleMessage(findUser.getEmail(), "Your 2FA Code", "Your code is: " + code);
     }
+
+//    public ApiResponse confirmationAction(ConfirmationCodeDTO confirmationCodeDTO) {
+//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User user = userService.getByUsername(userDetails.getUsername());
+//    }
 }

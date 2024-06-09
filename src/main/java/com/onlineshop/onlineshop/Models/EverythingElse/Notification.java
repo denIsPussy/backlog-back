@@ -27,6 +27,10 @@ public class Notification {
     @NotNull
     private boolean isRead = false;
 
+    @Column(name = "isSystem")
+    @NotNull
+    private boolean isSystem = false;
+
     @Column(name = "createdAt")
     @NotNull
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -42,6 +46,7 @@ public class Notification {
     public Notification(NotificationUpdateDTO notificationUpdateDTO) {
         this.id = notificationUpdateDTO.getId();
         this.isRead = notificationUpdateDTO.isRead();
+        this.isSystem = notificationUpdateDTO.isSystem();
     }
 
     public int getId() {
@@ -98,5 +103,13 @@ public class Notification {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isSystem() {
+        return isSystem;
+    }
+
+    public void setSystem(boolean system) {
+        isSystem = system;
     }
 }

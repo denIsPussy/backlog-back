@@ -1,19 +1,26 @@
 package com.onlineshop.onlineshop.Services;
 
+import com.onlineshop.onlineshop.Models.DTO.PasswordUpdateDTO;
+import com.onlineshop.onlineshop.Models.DTO.UpdateSettingsDTO;
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
+import com.onlineshop.onlineshop.Models.DTO.UserUpdateDTO;
 import com.onlineshop.onlineshop.Models.EverythingElse.Order;
 import com.onlineshop.onlineshop.Models.EverythingElse.ShoppingCart;
 import com.onlineshop.onlineshop.Models.EverythingElse.User;
+import com.onlineshop.onlineshop.Models.vk.ApiResponse;
 import com.onlineshop.onlineshop.Repositories.UserRepository;
 import com.onlineshop.onlineshop.Models.vk.VkApiResponse;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +32,9 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
+    @Lazy
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     public String registerUser(SignUpDTO signUpDTO) {
@@ -47,38 +57,6 @@ public class UserService implements UserDetailsService {
             return "Что-то пошло не так. Попробуйте позже";
         }
     }
-
-//    public Mono<vkProfileInfo> exchangeAndRetrieveProfile(String silentToken, int uuid) {
-//        return apiService.exchangeSilentAuthToken(silentToken, uuid)
-//                .flatMap(vkApiResponse -> apiService.getProfileInfo(vkApiResponse.getAccessToken()));
-//    }
-
-//    private AuthResponse authenticateAfterRegistration(SignUpDTO signUpDTO) {
-//        AuthRequest request = new AuthRequest(signUpDTO.getUsername(), signUpDTO.getPassword());
-//        return authService.authenticateUser(request);
-//    }
-
-//    public AuthenticationResponse authenticateUser(AuthenticationRequest request) throws AuthenticationException {
-//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-//        final User user = getByUsername(request.getUsername());
-//        if (user.isTwoFactorEnabled()) {
-//            generateAndSend2FACode(user.getUsername());
-//            return new AuthenticationResponse(null, "2FA code sent to your email. Please verify to complete login.");
-//        }
-//        final UserDetails userDetails = loadUserByUsername(user.getUsername());
-//        final String jwt = jwtUtil.generateToken(userDetails);
-//        return new AuthenticationResponse(jwt, null);
-//    }
-//
-//    public String validateAndGenerateJwt(TwoFactorCodeDTO twoFactorCodeDTO) {
-//        User user = getByUsername(twoFactorCodeDTO.getUsername());
-//        if (verify2FACode(twoFactorCodeDTO.getCode(), user)) {
-//            UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
-//            return jwtUtil.generateToken(userDetails);
-//        } else {
-//            return "Invalid 2FA code";
-//        }
-//    }
 
     public String create(User user){
         try{
@@ -157,25 +135,66 @@ public class UserService implements UserDetailsService {
         return "";
     }
 
-//    public boolean verify2FACode(String code, User user){
-//        return user.getTwoFactorCode().equals(code) &&
-//                user.getTwoFactorExpiration().isAfter(LocalDateTime.now());
-//    }
-//
-//    public void generateAndSend2FACode(String username) {
-//        String code = String.format("%06d", new Random().nextInt(999999));
-//        User findUser = getByUsername(username);
-//        findUser.setTwoFactorCode(code);
-//        findUser.setTwoFactorExpiration(LocalDateTime.now().plusMinutes(10));
-//        update(findUser);
-//        emailService.sendSimpleMessage(findUser.getEmail(), "Your 2FA Code", "Your code is: " + code);
-//    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
+    }
+
+    public ApiResponse changeUserData(UserUpdateDTO userUpdateDTO) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        if (passwordEncoder.matches(userUpdateDTO.getPassword(), user.getPassword())) {
+            user.setFirstName(userUpdateDTO.getFirstname());
+            user.setLastName(userUpdateDTO.getLastname());
+            user.setPatronymic(userUpdateDTO.getPatronymic());
+            update(user);
+            return new ApiResponse(true, "Данные успешно изменены"){};
+        }
+        return new ApiResponse(false, "Неверный пароль"){};
+
+    }
+
+    public ApiResponse changePassword(PasswordUpdateDTO passwordUpdateDTO) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        if (passwordEncoder.matches(passwordUpdateDTO.getOldPassword(), user.getPassword())) {
+            user.setPassword(passwordUpdateDTO.getNewPassword());
+            update(user);
+            return new ApiResponse(true, "Пароль успешно изменен"){};
+        }
+        return new ApiResponse(false, "Неверный прошлый пароль"){};
+    }
+
+    public ApiResponse settingChildMode(UpdateSettingsDTO updateSettingsDTO) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        if (passwordEncoder.matches(updateSettingsDTO.getPassword(), user.getPassword())) {
+            ApiResponse apiResponse = new ApiResponse(true, ""){};
+            if (user.isChildModeEnabled()) apiResponse.setMessage("Детский режим выключен");
+            else apiResponse.setMessage("Детский режим включен");
+            user.setChildModeEnabled(!user.isChildModeEnabled());
+            update(user);
+            return apiResponse;
+        }
+        return new ApiResponse(false, "Неверный пароль"){};
+    }
+
+    public ApiResponse settingTwoFactorAuth(UpdateSettingsDTO updateSettingsDTO) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+
+        if (passwordEncoder.matches(updateSettingsDTO.getPassword(), user.getPassword())) {
+            ApiResponse apiResponse = new ApiResponse(true, ""){};
+            if (user.isTwoFactorEnabled()) apiResponse.setMessage("Двухэтапная аутентификация выключена");
+            else apiResponse.setMessage("Двухэтапная аутентификация включена");
+
+            user.setTwoFactorEnabled(!user.isTwoFactorEnabled());
+            update(user);
+            return apiResponse;
+        }
+        return new ApiResponse(false, "Неверный пароль"){};
     }
 
     public void addBonuses(User user, int bonus){
@@ -206,5 +225,21 @@ public class UserService implements UserDetailsService {
         catch (Exception e){
             return null;
         }
+    }
+
+    public ApiResponse settingNotifications(UpdateSettingsDTO updateSettingsDTO) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+
+        if (passwordEncoder.matches(updateSettingsDTO.getPassword(), user.getPassword())) {
+            ApiResponse apiResponse = new ApiResponse(true, ""){};
+            if (user.isAreNotificationsEnabled()) apiResponse.setMessage("Рассылки выключены");
+            else apiResponse.setMessage("Рассылки включены");
+
+            user.setAreNotificationsEnabled(!user.isAreNotificationsEnabled());
+            update(user);
+            return apiResponse;
+        }
+        return new ApiResponse(false, "Неверный пароль"){};
     }
 }
