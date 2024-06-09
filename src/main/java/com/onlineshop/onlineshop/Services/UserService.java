@@ -242,4 +242,15 @@ public class UserService implements UserDetailsService {
         }
         return new ApiResponse(false, "Неверный пароль"){};
     }
+
+    public ApiResponse containsInCart(String username, int productId) {
+        User user = getByUsername(username);
+        boolean isContain = user.getShoppingCart().getCartItems().stream()
+                .anyMatch(item -> item.getProduct().getId() == productId);
+        if (isContain) {
+            return new ApiResponse(true, "Cart contain the product") {};
+        } else {
+            return new ApiResponse(false, "Cart not contain the product") {};
+        }
+    }
 }

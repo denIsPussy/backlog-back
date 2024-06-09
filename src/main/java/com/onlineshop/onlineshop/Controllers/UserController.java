@@ -67,6 +67,12 @@ public class UserController {
         return new ShoppingCartDTO(userService.getShopCartByUsername(userDetails.getUsername()));
     }
 
+    @GetMapping(path="/containsInCart/{productId}")
+    public ApiResponse containsInCart(@PathVariable int productId){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userService.containsInCart(userDetails.getUsername(), productId);
+    }
+
     @DeleteMapping(path="/update")
     public void update(@RequestBody UserViewDTO userDTO){
 
