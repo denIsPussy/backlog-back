@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.AuthenticationFailureException;
 import com.onlineshop.onlineshop.Models.DTO.Vk.VkApiResponse;
 import com.onlineshop.onlineshop.Models.DTO.Vk.VkProfileInfo;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -17,6 +18,7 @@ import org.apache.http.util.EntityUtils;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Transactional
 public class ApiService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private String serviceKey = "292a6012292a6012292a6012d92a3213ae2292a292a60124f7def0bc83a1353c93ac08f";

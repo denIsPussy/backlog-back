@@ -1,6 +1,7 @@
 package com.onlineshop.onlineshop.Services;
 
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.InsufficientFundsException;
+import com.onlineshop.onlineshop.Exceptions.CustomExceptions.OutOfStockException;
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.ResourceNotFoundException;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderCreateDTO;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderItemCreateDTO;
@@ -11,6 +12,9 @@ import com.onlineshop.onlineshop.Models.Database.Order.OrderItem;
 import com.onlineshop.onlineshop.Models.Database.Order.PaymentMethod;
 import com.onlineshop.onlineshop.Models.Database.Order.Status;
 import com.onlineshop.onlineshop.Models.Database.Product.Product;
+import com.onlineshop.onlineshop.Models.Database.ShoppingCart.ShoppingCart;
+import com.onlineshop.onlineshop.Models.Database.Store.Store;
+import com.onlineshop.onlineshop.Models.Database.Store.StoreItem;
 import com.onlineshop.onlineshop.Models.Database.User.User;
 import com.onlineshop.onlineshop.Repositories.*;
 import jakarta.transaction.Transactional;
@@ -43,6 +47,14 @@ public class OrderService {
     private StatusRepository statusRepository;
     @Autowired
     private OrderItemRepository orderItemRepository;
+    @Autowired
+    private StoreItemRepository storeItemRepository;
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
+    @Autowired
+    private CartItemRepository cartItemRepository;
+    @Autowired
+    private StoreService storeService;
 
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
@@ -57,10 +69,31 @@ public class OrderService {
 
         order = orderRepository.save(order);
 
+        Store store = storeService.getByCart().stream().filter(item -> item.getId() == orderCreateDTO.getStore().getId()).findFirst().orElseThrow(() -> new Exception("Не удалось создать заказ"));
+        logger.info("Найден магазин для покупки");
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemCreateDTO orderItemCreateDTO : orderCreateDTO.getOrderItems()) {
             Product product = productRepository.findById(orderItemCreateDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Продукт с ID=" + orderItemCreateDTO.getProductId() + " не найден"));
-//            if (product.getStoreList().s)
+            logger.info("Найден товар из корзины");
+            Optional<StoreItem> storeItemOptional = product.getStoreList().stream()
+                    .filter(item -> item.getStore().getId() == orderCreateDTO.getStore().getId() && item.getProduct().getId() == orderItemCreateDTO.getProductId())
+                    .findFirst();
+
+            if (storeItemOptional.isPresent()) {
+                logger.info("Товар найден в выбранном магазине");
+                StoreItem storeItem = storeItemOptional.get();
+                if (storeItem.getQuantity() >= orderItemCreateDTO.getQuantity()) {
+                    logger.info("Товар приобретен в магазине(уменьшено кол-во)");
+                    storeItem.setQuantity(storeItem.getQuantity() - orderItemCreateDTO.getQuantity());
+                    storeItemRepository.save(storeItem);
+                } else {
+                    throw new OutOfStockException("В выбраном магазине отсутствует данное количество товара: " + product.getName());
+                }
+            } else {
+                logger.info("Товар не найден в выбранном магазине");
+                throw new ResourceNotFoundException("Товар " + product.getName() + " не найден в выбранном магазине");
+            }
+
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
@@ -70,6 +103,7 @@ public class OrderService {
         orderItemRepository.saveAll(orderItems);
 
         order.setOrderItems(orderItems);
+        order.setStore(store);
         orderRepository.save(order);
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -88,9 +122,15 @@ public class OrderService {
         orderRepository.save(order);
 
         user.getOrderList().add(order);
-        userRepository.save(user);
 
         List<Order> orders = orderRepository.findAll();
+
+        ShoppingCart shoppingCart = user.getShoppingCart();
+        cartItemRepository.deleteAll(shoppingCart.getCartItems());
+        shoppingCart.setCartItems(new ArrayList<>());
+
+        shoppingCartRepository.save(shoppingCart);
+        userRepository.save(user);
 
 //        return orderRepository.findAll().stream().map(OrderViewDTO::new).toList();
         return new ApiResponse(true, "Заказ успешно создан.") {};

@@ -1,5 +1,7 @@
 package com.onlineshop.onlineshop.Models.DTO.Order;
 
+import com.onlineshop.onlineshop.Models.DTO.Store.StoreNestedDTO;
+
 import java.util.List;
 
 public class OrderCreateDTO {
@@ -8,6 +10,7 @@ public class OrderCreateDTO {
     private PaymentMethodCompositeDTO paymentMethod;
     private ShippingMethodCompositeDTO shippingMethod;
     private List<OrderItemCreateDTO> orderItems;
+    private StoreNestedDTO store;
 
     public OrderCreateDTO() {
     }
@@ -30,5 +33,9 @@ public class OrderCreateDTO {
 
     public List<OrderItemCreateDTO> getOrderItems() {
         return orderItems;
+    }
+
+    public StoreNestedDTO getStore() {
+        return store;
     }
 }

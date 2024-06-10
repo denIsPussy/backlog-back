@@ -1,6 +1,7 @@
 package com.onlineshop.onlineshop.Models.DTO.Order;
 
 import com.onlineshop.onlineshop.Models.DTO.Product.ProductNestedDTO;
+import com.onlineshop.onlineshop.Models.DTO.Store.StoreNestedDTO;
 import com.onlineshop.onlineshop.Models.Database.Order.OrderItem;
 
 public class OrderItemViewDTO {

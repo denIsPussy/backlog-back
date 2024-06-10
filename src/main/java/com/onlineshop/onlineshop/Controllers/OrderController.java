@@ -4,6 +4,7 @@ import com.onlineshop.onlineshop.Models.DTO.Order.OrderCreateDTO;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderViewDTO;
 import com.onlineshop.onlineshop.Models.DTO.Order.PaymentMethodCompositeDTO;
 import com.onlineshop.onlineshop.Models.DTO.Order.ShippingMethodCompositeDTO;
+import com.onlineshop.onlineshop.Models.DTO.Store.StoreNestedDTO;
 import com.onlineshop.onlineshop.Models.DTO.Vk.ApiResponse;
 import com.onlineshop.onlineshop.Models.Database.Order.Order;
 import com.onlineshop.onlineshop.Repositories.PaymentMethodRepository;
@@ -30,6 +31,8 @@ public class OrderController {
     private PaymentMethodRepository paymentMethodRepository;
     @Autowired
     private ShippingMethodRepository shippingMethodRepository;
+    @Autowired
+    private StoreService storeService;
 
     @GetMapping(path = "/getPaymentMethods")
     public List<PaymentMethodCompositeDTO> getPaymentMethods() {
@@ -39,6 +42,12 @@ public class OrderController {
     @GetMapping(path = "/getShippingMethods")
     public List<ShippingMethodCompositeDTO> getShippingMethods() {
         return shippingMethodRepository.findAll().stream().map(ShippingMethodCompositeDTO::new).toList();
+    }
+
+    @GetMapping(path = "/getStore")
+    public List<StoreNestedDTO> getStore() {
+        logger.info("СЮДААААААА-1");
+        return storeService.getByCart().stream().map(StoreNestedDTO::new).toList();
     }
 
     @GetMapping(path = "/byUser")

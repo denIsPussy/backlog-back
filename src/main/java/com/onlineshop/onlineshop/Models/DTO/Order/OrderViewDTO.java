@@ -1,6 +1,7 @@
 package com.onlineshop.onlineshop.Models.DTO.Order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.onlineshop.onlineshop.Models.DTO.Store.StoreNestedDTO;
 import com.onlineshop.onlineshop.Models.Database.Order.Order;
 import com.onlineshop.onlineshop.Models.Database.Order.PaymentMethod;
 import com.onlineshop.onlineshop.Models.Database.Order.ShippingMethod;
@@ -20,6 +21,7 @@ public class OrderViewDTO {
     private PaymentMethod paymentMethod;
     private ShippingMethod shippingMethod;
     private List<OrderItemViewDTO> orderItems;
+    private StoreNestedDTO store;
     @JsonIgnore
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
@@ -35,9 +37,8 @@ public class OrderViewDTO {
         this.status = order.getStatus();
         this.paymentMethod = order.getPaymentMethod();
         this.shippingMethod = order.getShippingMethod();
-        logger.info("MODEL orderItems of order 1 is null: {}", order.getOrderItems() == null);
         this.orderItems = order.getOrderItems().stream().map(OrderItemViewDTO::new).toList();
-        logger.info("MODEL check orderItems of order 1: {}", order.getOrderItems().get(0).getQuantity());
+        this.store = new StoreNestedDTO(order.getStore());
     }
 
     public int getId() {
@@ -70,5 +71,9 @@ public class OrderViewDTO {
 
     public List<OrderItemViewDTO> getOrderItems() {
         return orderItems;
+    }
+
+    public StoreNestedDTO getStore() {
+        return store;
     }
 }

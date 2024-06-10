@@ -2,6 +2,7 @@ package com.onlineshop.onlineshop.Models.Database.Order;
 
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderItemViewDTO;
 import com.onlineshop.onlineshop.Models.Database.Product.Product;
+import com.onlineshop.onlineshop.Models.Database.Store.Store;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,13 +22,6 @@ public class OrderItem {
     private Product product;
 
     private int quantity;
-
-
-    public OrderItem(Order order, int quantity, Product product) {
-        this.order = order;
-        this.quantity = quantity;
-        this.product = product;
-    }
 
     public OrderItem(){
     }

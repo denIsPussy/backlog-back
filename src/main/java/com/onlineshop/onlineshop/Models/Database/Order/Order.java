@@ -2,6 +2,7 @@ package com.onlineshop.onlineshop.Models.Database.Order;
 
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderCreateDTO;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderViewDTO;
+import com.onlineshop.onlineshop.Models.Database.Store.Store;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -42,6 +43,10 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
 
+    @ManyToOne
+    @JoinColumn(name = "store_id")  // Ссылка на магазин
+    private Store store;
+
     public Order(){
 
     }
@@ -55,6 +60,7 @@ public class Order {
         this.paymentMethod = orderViewDTO.getPaymentMethod();
         this.shippingMethod = orderViewDTO.getShippingMethod();
         this.orderItems = orderViewDTO.getOrderItems().stream().map(OrderItem::new).toList();
+        this.store = new Store(orderViewDTO.getStore());
     }
 
     public Order(OrderCreateDTO orderCreateDTO) {
@@ -134,5 +140,13 @@ public class Order {
 
     public void removeFromOrderItems(OrderItem orderItem) {
         this.orderItems.removeIf(item -> item.getId() == orderItem.getId());
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
     }
 }
