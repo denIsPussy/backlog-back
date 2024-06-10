@@ -1,11 +1,10 @@
 package com.onlineshop.onlineshop.Models.DTO.Order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemViewDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.Order;
-import com.onlineshop.onlineshop.Models.EverythingElse.PaymentMethod;
-import com.onlineshop.onlineshop.Models.EverythingElse.ShippingMethod;
-import com.onlineshop.onlineshop.Models.EverythingElse.Status;
+import com.onlineshop.onlineshop.Models.Database.Order.Order;
+import com.onlineshop.onlineshop.Models.Database.Order.PaymentMethod;
+import com.onlineshop.onlineshop.Models.Database.Order.ShippingMethod;
+import com.onlineshop.onlineshop.Models.Database.Order.Status;
 import com.onlineshop.onlineshop.Services.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

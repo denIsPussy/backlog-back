@@ -1,9 +1,9 @@
 package com.onlineshop.onlineshop.Services;
 
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.ResourceNotFoundException;
-import com.onlineshop.onlineshop.Models.EverythingElse.Category;
-import com.onlineshop.onlineshop.Models.Products.Product;
-import com.onlineshop.onlineshop.Models.Products.Review;
+import com.onlineshop.onlineshop.Models.Database.Product.Category;
+import com.onlineshop.onlineshop.Models.Database.Product.Product;
+import com.onlineshop.onlineshop.Models.Database.Product.Review;
 import com.onlineshop.onlineshop.Repositories.CategoryRepository;
 import com.onlineshop.onlineshop.Repositories.ProductRepository;
 import com.onlineshop.onlineshop.Repositories.ReviewRepository;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class ProductService {
 
     public void updateProductRating(int productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found: " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найден товар: " + productId));
 
         double averageRating = product.getReviewList().stream()
                 .mapToDouble(Review::getRating)
@@ -57,7 +56,7 @@ public class ProductService {
 
     public List<Review> deleteReview(int reviewId) throws ResourceNotFoundException {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id " + reviewId));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найден отзыв с id " + reviewId));
         int productId = review.getProduct().getId();
         reviewRepository.delete(review);
         reviewRepository.flush();
@@ -67,7 +66,7 @@ public class ProductService {
 
     public List<Review> updateReview(Review updReview) throws ResourceNotFoundException {
         Review review = reviewRepository.findById(updReview.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id " + updReview.getId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найден отзыв с id " + updReview.getId()));
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         review.setUpdatedAt(now);
         review.setHeader(updReview.getHeader());
@@ -86,27 +85,35 @@ public class ProductService {
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
-    public List<Product> filterByRating(String rating){
-        return null;
-    }
+
     public List<Category> getCategories(){
         return categoryRepository.findAll();
     }
-    public List<Product> filterByPrice(String price){
-        return null;
-    }
+
     public Page<Product> filterByCategory(int categoryId, Pageable pageable){
         return productRepository.findByCategory_Id(categoryId, pageable);
     }
-    public List<Product> search(String name){
-        return null;
-    }
+
     public Page<Product> getAll(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
+
     public Product getById(int productId){
         return productRepository.findById(productId).orElseThrow();
     }
+
+    public List<Product> filterByRating(String rating){
+        return null;
+    }
+
+    public List<Product> filterByPrice(String price){
+        return null;
+    }
+
+    public List<Product> search(String name){
+        return null;
+    }
+
     public void test(){
 
         try {

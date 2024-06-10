@@ -1,11 +1,7 @@
 package com.onlineshop.onlineshop.Models.DTO.Product;
 
-import com.onlineshop.onlineshop.Models.DTO.AttributeNestedDTO;
-import com.onlineshop.onlineshop.Models.DTO.CategoryCompositeDTO;
-import com.onlineshop.onlineshop.Models.DTO.DiscountNestedDTO;
-import com.onlineshop.onlineshop.Models.DTO.ReviewDTO;
-import com.onlineshop.onlineshop.Models.DTO.StoreItem.StoreItemNestedDTO;
-import com.onlineshop.onlineshop.Models.Products.Product;
+import com.onlineshop.onlineshop.Models.DTO.Store.StoreItemNestedDTO;
+import com.onlineshop.onlineshop.Models.Database.Product.Product;
 
 import java.util.List;
 

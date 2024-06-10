@@ -1,16 +1,9 @@
 package com.onlineshop.onlineshop.NotificationService;
 
 import com.onlineshop.onlineshop.Controllers.NotificationController;
-import com.onlineshop.onlineshop.Models.EverythingElse.Discount;
 import com.onlineshop.onlineshop.Repositories.DiscountRepository;
-import com.onlineshop.onlineshop.Services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Component
 public class DiscountNotificationScheduler {

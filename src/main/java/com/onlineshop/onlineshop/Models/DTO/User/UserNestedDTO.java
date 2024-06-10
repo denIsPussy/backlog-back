@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO.User;
 
-import com.onlineshop.onlineshop.Models.EverythingElse.User;
+import com.onlineshop.onlineshop.Models.Database.User.User;
 
 public class UserNestedDTO {
     private String username;

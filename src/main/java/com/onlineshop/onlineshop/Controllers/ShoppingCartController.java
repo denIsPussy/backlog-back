@@ -1,12 +1,11 @@
 package com.onlineshop.onlineshop.Controllers;
 
-import com.onlineshop.onlineshop.Models.EverythingElse.CartItem;
+import com.onlineshop.onlineshop.Models.Database.ShoppingCart.CartItem;
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.CartItemViewDTO;
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.ShoppingCartDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.ShoppingCart;
-import com.onlineshop.onlineshop.Models.EverythingElse.User;
-import com.onlineshop.onlineshop.Models.Products.Product;
-import com.onlineshop.onlineshop.Models.Products.ProductAttribute;
+import com.onlineshop.onlineshop.Models.Database.ShoppingCart.ShoppingCart;
+import com.onlineshop.onlineshop.Models.Database.User.User;
+import com.onlineshop.onlineshop.Models.Database.Product.Product;
 import com.onlineshop.onlineshop.Services.AuthService;
 import com.onlineshop.onlineshop.Services.ProductService;
 import com.onlineshop.onlineshop.Services.ShoppingCartService;
@@ -74,10 +73,5 @@ public class ShoppingCartController {
         ShoppingCart shoppCart = user.getShoppingCart();
         return new ShoppingCartDTO(shoppingCartService.increaseProductQuantity(shoppCart, productId));
         //return new ShoppingCartDTO(newCart);
-    }
-
-    @GetMapping(path="/byUser/{id}")
-    public ShoppingCartDTO getByUserId(@PathVariable int userId){
-        return null;
     }
 }

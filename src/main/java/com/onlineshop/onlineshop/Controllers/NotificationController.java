@@ -1,32 +1,29 @@
 package com.onlineshop.onlineshop.Controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlineshop.onlineshop.Models.DTO.NotificationDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.Notification;
-import com.onlineshop.onlineshop.Models.EverythingElse.User;
+import com.onlineshop.onlineshop.Models.DTO.Notification.NotificationDTO;
+import com.onlineshop.onlineshop.Models.Database.User.Notification;
+import com.onlineshop.onlineshop.Models.Database.User.User;
 import com.onlineshop.onlineshop.Services.NotificationService;
 import com.onlineshop.onlineshop.Services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("/notifications")
 public class NotificationController {
+    private final Logger logger = LoggerFactory.getLogger(NotificationController.class);
     @Autowired
     private UserService userService;
     @Autowired
     private NotificationService notificationService;
-    private final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
     @GetMapping("/")
     public List<NotificationDTO> getByUser() {

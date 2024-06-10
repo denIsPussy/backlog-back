@@ -1,17 +1,18 @@
 package com.onlineshop.onlineshop.Services;
 
-import com.onlineshop.onlineshop.Models.DTO.PasswordUpdateDTO;
-import com.onlineshop.onlineshop.Models.DTO.UpdateSettingsDTO;
+import com.onlineshop.onlineshop.Exceptions.CustomExceptions.InvalidRequestException;
+import com.onlineshop.onlineshop.Exceptions.CustomExceptions.RegistrationFailureException;
+import com.onlineshop.onlineshop.Models.DTO.User.PasswordUpdateDTO;
+import com.onlineshop.onlineshop.Models.DTO.User.UpdateSettingsDTO;
 import com.onlineshop.onlineshop.Models.DTO.User.SignUpDTO;
-import com.onlineshop.onlineshop.Models.DTO.UserUpdateDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.Order;
-import com.onlineshop.onlineshop.Models.EverythingElse.ShoppingCart;
-import com.onlineshop.onlineshop.Models.EverythingElse.User;
-import com.onlineshop.onlineshop.Models.Products.Product;
-import com.onlineshop.onlineshop.Models.Products.Review;
-import com.onlineshop.onlineshop.Models.vk.ApiResponse;
+import com.onlineshop.onlineshop.Models.DTO.User.UserUpdateDTO;
+import com.onlineshop.onlineshop.Models.Database.Order.Order;
+import com.onlineshop.onlineshop.Models.Database.ShoppingCart.ShoppingCart;
+import com.onlineshop.onlineshop.Models.Database.User.User;
+import com.onlineshop.onlineshop.Models.Database.Product.Product;
+import com.onlineshop.onlineshop.Models.Database.Product.Review;
+import com.onlineshop.onlineshop.Models.DTO.Vk.ApiResponse;
 import com.onlineshop.onlineshop.Repositories.UserRepository;
-import com.onlineshop.onlineshop.Models.vk.VkApiResponse;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +42,11 @@ public class UserService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-    public String registerUser(SignUpDTO signUpDTO) {
+    public void registerUser(SignUpDTO signUpDTO) {
         User newUser = new User();
+        if (userRepository.findByUsername(signUpDTO.getUsername()).isPresent()) {
+            throw new RegistrationFailureException("Пользователь с таким логином уже существует");
+        }
         if (signUpDTO.getVkId() != 0) {
             newUser.setVkId(signUpDTO.getVkId());
             newUser.setTwoFactorEnabled(false);
@@ -53,76 +57,34 @@ public class UserService implements UserDetailsService {
         newUser.setPatronymic(signUpDTO.getPatronymic());
         newUser.setUsername(signUpDTO.getUsername());
         newUser.setPassword(new BCryptPasswordEncoder().encode(signUpDTO.getPassword()));
-        try{
-            userRepository.save(newUser);
-            return "Регистрация прошла успешно";
-        }
-        catch (Exception e){
-            return "Что-то пошло не так. Попробуйте позже";
-        }
-    }
-
-    public String create(User user){
-        try{
-            userRepository.save(user);
-            return "Регистрация прошла успешно";
-        }
-        catch (Exception e){
-            return "Что-то пошло не так. Попробуйте позже";
-        }
-    }
-
-    public String register(VkApiResponse vkApiResponse){
-        try{
-            User user = new User();
-            user.setVkId(vkApiResponse.getResponse().getUserId());
-            userRepository.save(user);
-            return "Регистрация прошла успешно";
-        }
-        catch (Exception e){
-            return "Что-то пошло не так. Попробуйте позже";
-        }
+        userRepository.save(newUser);
     }
 
     public ShoppingCart getShopCartByUsername(String username){
-        try{
-            Optional<User> findUser = userRepository.findByUsername(username);
-            User user = findUser.orElseThrow();
-            logger.info(user.getShoppingCart().getCartItems().toString());
-            return user.getShoppingCart();
-        }
-        catch (Exception e){
-            return null;
-        }
+        Optional<User> findUser = userRepository.findByUsername(username);
+        User user = findUser.orElseThrow(() -> new UsernameNotFoundException("Не удалось загрузить данные корзины"));
+        return user.getShoppingCart();
     }
 
     public List<Order> getOrders(String username){
-        try{
-            Optional<User> findUser = userRepository.findByUsername(username);
-            User user = findUser.orElseThrow();
-            return user.getOrderList();
-        }
-        catch (Exception e){
-            return null;
-        }
+        Optional<User> findUser = userRepository.findByUsername(username);
+        User user = findUser.orElseThrow(() -> new UsernameNotFoundException("Не удалось загрузить заказы"));
+        return user.getOrderList();
     }
 
-    public String update(User user){
+    public void update(User user) throws Exception {
         try{
             Optional<User> optUser = userRepository.findByUsername(user.getUsername());
-            User findUser = optUser.orElseThrow();
-            if (findUser == null) return "Пользователь не найден";
+            User findUser = optUser.orElseThrow(() -> new UsernameNotFoundException("Не удалось обновить данные"));
             findUser.update(user);
             userRepository.save(findUser);
-            return "Данные пользователя успешно обновлены";
+        }
+        catch (UsernameNotFoundException e){
+            throw e;
         }
         catch (Exception e){
-            return "Что-то пошло не так. Попробуйте позже";
+            throw new Exception("Не удалось обновить данные");
         }
-    }
-
-    public boolean verifyUserCredentials(User user){
-        return true;
     }
 
     public User getByUsername(String username){
@@ -135,10 +97,6 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public String authorization(String login, String password){
-        return "";
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
@@ -146,9 +104,9 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
     }
 
-    public ApiResponse changeUserData(UserUpdateDTO userUpdateDTO) {
+    public ApiResponse changeUserData(UserUpdateDTO userUpdateDTO) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Не удалось обновить данные"));
         if (passwordEncoder.matches(userUpdateDTO.getPassword(), user.getPassword())) {
             user.setFirstName(userUpdateDTO.getFirstname());
             user.setLastName(userUpdateDTO.getLastname());
@@ -156,24 +114,24 @@ public class UserService implements UserDetailsService {
             update(user);
             return new ApiResponse(true, "Данные успешно изменены"){};
         }
-        return new ApiResponse(false, "Неверный пароль"){};
+        throw new InvalidRequestException("Неверный пароль");
 
     }
 
-    public ApiResponse changePassword(PasswordUpdateDTO passwordUpdateDTO) {
+    public ApiResponse changePassword(PasswordUpdateDTO passwordUpdateDTO) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Не удалось обновить пароль"));
         if (passwordEncoder.matches(passwordUpdateDTO.getOldPassword(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(passwordUpdateDTO.getNewPassword()));
             update(user);
             return new ApiResponse(true, "Пароль успешно изменен"){};
         }
-        return new ApiResponse(false, "Неверный прошлый пароль"){};
+        throw new InvalidRequestException("Неверный пароль");
     }
 
-    public ApiResponse settingChildMode(UpdateSettingsDTO updateSettingsDTO) {
+    public ApiResponse settingChildMode(UpdateSettingsDTO updateSettingsDTO) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Не удалось настроить детский режим"));
         if (passwordEncoder.matches(updateSettingsDTO.getPassword(), user.getPassword())) {
             ApiResponse apiResponse = new ApiResponse(true, ""){};
             if (user.isChildModeEnabled()) apiResponse.setMessage("Детский режим выключен");
@@ -182,12 +140,12 @@ public class UserService implements UserDetailsService {
             update(user);
             return apiResponse;
         }
-        return new ApiResponse(false, "Неверный пароль"){};
+        throw new InvalidRequestException("Неверный пароль");
     }
 
-    public ApiResponse settingTwoFactorAuth(UpdateSettingsDTO updateSettingsDTO) {
+    public ApiResponse settingTwoFactorAuth(UpdateSettingsDTO updateSettingsDTO) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Не удалось настроить двухэтапную аутентификацию"));
 
         if (passwordEncoder.matches(updateSettingsDTO.getPassword(), user.getPassword())) {
             ApiResponse apiResponse = new ApiResponse(true, ""){};
@@ -198,7 +156,7 @@ public class UserService implements UserDetailsService {
             update(user);
             return apiResponse;
         }
-        return new ApiResponse(false, "Неверный пароль"){};
+        throw new InvalidRequestException("Неверный пароль");
     }
 
     public void addBonuses(User user, int bonus){
@@ -209,31 +167,14 @@ public class UserService implements UserDetailsService {
         return;
     }
 
-    public void setChildMode(boolean isEnabled){
-    }
-
-    public void configureNotifications(boolean isEnabled){
-    }
-
-    public void passwordEncryption(String password){
-    }
-
-    public void decryptingPassword(String password){
-    }
-
     public User getByVkId(int vkId) {
-        try{
-            Optional<User> optUser = userRepository.findByVkId(vkId);
-            return optUser.orElseThrow();
-        }
-        catch (Exception e){
-            return null;
-        }
+        Optional<User> optUser = userRepository.findByVkId(vkId);
+        return optUser.orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
 
-    public ApiResponse settingNotifications(UpdateSettingsDTO updateSettingsDTO) {
+    public ApiResponse settingNotifications(UpdateSettingsDTO updateSettingsDTO) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Не удалось настроить уведомления"));
 
         if (passwordEncoder.matches(updateSettingsDTO.getPassword(), user.getPassword())) {
             ApiResponse apiResponse = new ApiResponse(true, ""){};
@@ -244,7 +185,7 @@ public class UserService implements UserDetailsService {
             update(user);
             return apiResponse;
         }
-        return new ApiResponse(false, "Неверный пароль"){};
+        throw new InvalidRequestException("Неверный пароль");
     }
 
     public ApiResponse containsInCart(int productId) {
@@ -271,6 +212,9 @@ public class UserService implements UserDetailsService {
     public ApiResponse topUpDeposit(int amount) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = getByUsername(userDetails.getUsername());
+        if (user == null){
+            throw new UsernameNotFoundException("Пользователь не найден");
+        }
         user.setDeposit(user.getDeposit() + amount);
         return new ApiResponse(true,"Баланс пополнен"){};
     }

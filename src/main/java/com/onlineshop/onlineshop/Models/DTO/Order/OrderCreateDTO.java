@@ -1,9 +1,5 @@
 package com.onlineshop.onlineshop.Models.DTO.Order;
 
-import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemCreateDTO;
-import com.onlineshop.onlineshop.Models.DTO.PaymentMethodCompositeDTO;
-import com.onlineshop.onlineshop.Models.DTO.ShippingMethodCompositeDTO;
-
 import java.util.List;
 
 public class OrderCreateDTO {

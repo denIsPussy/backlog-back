@@ -1,21 +1,17 @@
 package com.onlineshop.onlineshop.Services;
-import com.onlineshop.onlineshop.ApiService;
-import com.onlineshop.onlineshop.Controllers.AuthRequest;
+import com.onlineshop.onlineshop.Models.DTO.Vk.SignInDTO;
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.AuthenticationFailureException;
-import com.onlineshop.onlineshop.JwtUtil;
-import com.onlineshop.onlineshop.Models.DTO.ConfirmationCodeDTO;
-import com.onlineshop.onlineshop.Models.DTO.PasswordUpdateDTO;
-import com.onlineshop.onlineshop.Models.DTO.UpdateSettingsDTO;
-import com.onlineshop.onlineshop.Models.DTO.UserUpdateDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.TwoFactorCodeDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.User;
-import com.onlineshop.onlineshop.Models.vk.ApiResponse;
-import com.onlineshop.onlineshop.Models.vk.UserTokenDto;
-import com.onlineshop.onlineshop.Models.vk.VkUserPartialDto;
-import com.onlineshop.onlineshop.PasswordGenerator;
+import com.onlineshop.onlineshop.Utils.JwtUtil;
+import com.onlineshop.onlineshop.Models.Database.User.TwoFactorCodeDTO;
+import com.onlineshop.onlineshop.Models.Database.User.User;
+import com.onlineshop.onlineshop.Models.DTO.Vk.ApiResponse;
+import com.onlineshop.onlineshop.Models.DTO.User.UserTokenDTO;
+import com.onlineshop.onlineshop.Models.DTO.Vk.VkUserPartialDTO;
+import com.onlineshop.onlineshop.Utils.PasswordGenerator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.time.LocalDateTime;
@@ -61,12 +58,10 @@ public class AuthService{
                 .thenCompose(vkApiResponse -> {
                     User user = userService.getByVkId(vkApiResponse.getResponse().getUserId());
                     if (user != null) {
-                        logger.info("Username : {}",
-                                user.getUsername());
-                        return authenticateUser(new AuthRequest(vkApiResponse.getResponse().getUserId()));
+                        return authenticateUser(new SignInDTO(vkApiResponse.getResponse().getUserId()));
                     }
                     return apiService.getProfileInfo(vkApiResponse.getResponse().getAccessToken())
-                            .thenApply(profileInfo -> new VkUserPartialDto(
+                            .thenApply(profileInfo -> new VkUserPartialDTO(
                                     vkApiResponse.getResponse().getUserId(),
                                     profileInfo.getResponse().get(0).getFirstName(),
                                     profileInfo.getResponse().get(0).getLastName(),
@@ -80,23 +75,22 @@ public class AuthService{
     }
 
     @Async("taskExecutor")
-    public CompletableFuture<ApiResponse> authenticateUser(AuthRequest request) {
+    public CompletableFuture<ApiResponse> authenticateUser(SignInDTO request) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 UserDetails userDetails;
                 User user;
 
                 if (request.getVkId() != 0) {
-                    // Аутентификация по vkId
                     user = userService.getByVkId(request.getVkId());
                     if (user == null) throw new UsernameNotFoundException("Пользователь с таким vkId не найден.");
                 } else {
-                    // Стандартная аутентификация по имени пользователя и паролю
-                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+                    try{
+                        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+                    } catch (Exception e){
+                        throw new AuthenticationFailureException("Неверный логин или пароль");
+                    }
                     user = userService.getByUsername(request.getUsername());
-                    if (user == null) throw new UsernameNotFoundException("Пользователь с таким именем не найден.");
-
-                    logger.info("Authenticated user: {}", user.getUsername());
 
                     if (user.isTwoFactorEnabled()) {
                         generateAndSend2FACode(user.getUsername());
@@ -104,20 +98,30 @@ public class AuthService{
                     }
                 }
                 userDetails = userService.loadUserByUsername(user.getUsername());
-                return new UserTokenDto(jwtUtil.generateToken(userDetails), user.getUsername(), true, "token", user.isChildModeEnabled());
+                return new UserTokenDTO(jwtUtil.generateToken(userDetails), user.getUsername(), true, "token", user.isChildModeEnabled());
             } catch (Exception e) {
                 throw new CompletionException(new AuthenticationFailureException(e.getMessage()));
             }
         });
     }
 
-    public ApiResponse validateAndGenerateJwt(TwoFactorCodeDTO twoFactorCodeDTO) {
+    public ApiResponse validateAndGenerateJwt(TwoFactorCodeDTO twoFactorCodeDTO) throws Exception {
         User user = userService.getByUsername(twoFactorCodeDTO.getUsername());
-        if (verify2FACode(twoFactorCodeDTO.getCode(), user)) {
-            UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
-            return new UserTokenDto(jwtUtil.generateToken(userDetails), user.getUsername(), true, "2FA code", user.isChildModeEnabled());
-        } else {
-            return new ApiResponse(false, "Неверный 2FA код"){};
+        if (user == null) {
+            throw new UsernameNotFoundException("Пользователь " + twoFactorCodeDTO.getUsername() + " не найден.");
+        }
+
+        try {
+            if (verify2FACode(twoFactorCodeDTO.getCode(), user)) {
+                UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
+                return new UserTokenDTO(jwtUtil.generateToken(userDetails), user.getUsername(), true, "2FA код успешно подтвержден.", user.isChildModeEnabled());
+            } else {
+                throw new AuthenticationFailureException("Неверный 2FA код.");
+            }
+        } catch (AuthenticationFailureException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new Exception("Ошибка при генерации JWT: " + e.getMessage(), e);
         }
     }
 
@@ -133,25 +137,36 @@ public class AuthService{
         findUser.setConfirmationCodeExpiration(LocalDateTime.now().plusMinutes(10));
         try{
             userService.update(findUser);
+            emailService.sendSimpleMessage(findUser.getEmail(), "Подтверждение входа", "Ваш 2FA код: " + code);
         }
         catch (Exception e){
-            throw new Exception(e.getMessage());
+            throw new Exception("Ошибка отправки 2FA кода");
         }
-        emailService.sendSimpleMessage(findUser.getEmail(), "Your 2FA Code", "Your code is: " + code);
     }
 
-    public ApiResponse resetPassword() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(userDetails.getUsername());
-        String newPassword = PasswordGenerator.generatePassword(8);
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userService.update(user);
-        emailService.sendSimpleMessage(user.getEmail(), "Сброс пароля", "Ваш новый пароль: " + newPassword + ". Вы можете сменить пароль в личном профиле.");
-        return new ApiResponse(true, "Пароль успешно сброшен. Ожидайте уведомления на почту"){};
-    }
+    public ApiResponse resetPassword() throws Exception {
+        try {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-//    public ApiResponse confirmationAction(ConfirmationCodeDTO confirmationCodeDTO) {
-//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        User user = userService.getByUsername(userDetails.getUsername());
-//    }
+            User user = userService.getByUsername(userDetails.getUsername());
+            if (user == null) {
+                throw new UsernameNotFoundException("Пользователь не найден.");
+            }
+
+            String newPassword = PasswordGenerator.generatePassword(8);
+            if (newPassword.isEmpty()) {
+                throw new IllegalStateException("Не удалось сгенерировать новый пароль.");
+            }
+
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userService.update(user);
+
+            emailService.sendSimpleMessage(user.getEmail(), "Сброс пароля", "Ваш новый пароль: " + newPassword + ". Вы можете сменить пароль в личном профиле.");
+            return new ApiResponse(true, "Пароль успешно сброшен. Ожидайте уведомления на почту"){};
+        } catch (UsernameNotFoundException | IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new Exception("Произошла ошибка при сбросе пароля");
+        }
+    }
 }

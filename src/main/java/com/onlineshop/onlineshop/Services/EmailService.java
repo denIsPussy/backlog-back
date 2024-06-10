@@ -11,12 +11,16 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendSimpleMessage(String to, String subject, String text) {
+    public void sendSimpleMessage(String to, String subject, String text) throws Exception {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("test.email.movavi@mail.ru");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (Exception e){
+            throw new Exception("Не удалось отправить письмо на почту");
+        }
     }
 }

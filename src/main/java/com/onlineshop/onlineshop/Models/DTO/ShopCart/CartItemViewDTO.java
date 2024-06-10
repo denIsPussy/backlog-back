@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO.ShopCart;
 
-import com.onlineshop.onlineshop.Models.EverythingElse.CartItem;
+import com.onlineshop.onlineshop.Models.Database.ShoppingCart.CartItem;
 import com.onlineshop.onlineshop.Models.DTO.Product.ProductViewDTO;
 
 public class CartItemViewDTO {

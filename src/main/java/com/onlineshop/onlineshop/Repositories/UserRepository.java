@@ -1,6 +1,6 @@
 package com.onlineshop.onlineshop.Repositories;
 
-import com.onlineshop.onlineshop.Models.EverythingElse.User;
+import com.onlineshop.onlineshop.Models.Database.User.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,28 +1,23 @@
 package com.onlineshop.onlineshop.Controllers;
 
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.ResourceNotFoundException;
-import com.onlineshop.onlineshop.Models.DTO.CategoryCompositeDTO;
+import com.onlineshop.onlineshop.Models.DTO.Product.CategoryCompositeDTO;
 import com.onlineshop.onlineshop.Models.DTO.Product.ProductViewDTO;
-import com.onlineshop.onlineshop.Models.DTO.ReviewCreateDTO;
-import com.onlineshop.onlineshop.Models.DTO.ReviewDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.User;
-import com.onlineshop.onlineshop.Models.Products.Product;
-import com.onlineshop.onlineshop.Models.Products.Review;
+import com.onlineshop.onlineshop.Models.DTO.Product.ReviewCreateDTO;
+import com.onlineshop.onlineshop.Models.DTO.Product.ReviewDTO;
+import com.onlineshop.onlineshop.Models.Database.User.User;
+import com.onlineshop.onlineshop.Models.Database.Product.Product;
+import com.onlineshop.onlineshop.Models.Database.Product.Review;
 import com.onlineshop.onlineshop.Services.ProductService;
 import com.onlineshop.onlineshop.Services.UserService;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -38,38 +33,37 @@ public class ProductController {
         return productService.getReviewsByProductId(productId).stream().map(ReviewDTO::new).toList();
     }
 
-    @GetMapping(path="/byRating")
-    public List<ProductViewDTO> filterByRating(@RequestParam String rating){
+    @GetMapping(path = "/byRating")
+    public List<ProductViewDTO> filterByRating(@RequestParam String rating) {
         return null;
     }
-    @GetMapping(path="/byPrice")
-    public List<ProductViewDTO> filterByPrice(@RequestParam String price){
+
+    @GetMapping(path = "/byPrice")
+    public List<ProductViewDTO> filterByPrice(@RequestParam String price) {
         return null;
     }
-    @GetMapping(path="/byCategory/{categoryId}")
+
+    @GetMapping(path = "/byCategory/{categoryId}")
     public Page<ProductViewDTO> filterByCategory(@PathVariable int categoryId,
                                                  @RequestParam(defaultValue = "0") int page,
-                                                 @RequestParam(defaultValue = "10") int size){
+                                                 @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return productService.filterByCategory(categoryId, pageable).map(ProductViewDTO::new);
     }
-    @GetMapping(path="/categories")
-    public List<CategoryCompositeDTO> getCategories(){
+
+    @GetMapping(path = "/categories")
+    public List<CategoryCompositeDTO> getCategories() {
         return productService.getCategories().stream().map(CategoryCompositeDTO::new).toList();
     }
-    @GetMapping(path="/search")
-    public List<ProductViewDTO> search(@RequestParam String name){
+
+    @GetMapping(path = "/search")
+    public List<ProductViewDTO> search(@RequestParam String name) {
         return null;
     }
-    @GetMapping(path="/get/{productId}")
-    public ProductViewDTO getById(@PathVariable int productId){
+
+    @GetMapping(path = "/get/{productId}")
+    public ProductViewDTO getById(@PathVariable int productId) {
         return new ProductViewDTO(productService.getById(productId));
-    }
-    @GetMapping(path = "/")
-    public Page<ProductViewDTO> getAll(@RequestParam(defaultValue = "0") int page,
-                                       @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return productService.getAll(pageable).map(ProductViewDTO::new);
     }
 
     @PostMapping("/createReview")
@@ -93,13 +87,13 @@ public class ProductController {
         return productService.deleteReview(reviewId).stream().map(ReviewDTO::new).toList();
     }
 
-    @GetMapping(path="/test")
-    public void test(){
+    @GetMapping(path = "/test")
+    public void test() {
         productService.test();
     }
 
-    @GetMapping(path="/testCreateReviews")
-    public void testCreateReviews(){
+    @GetMapping(path = "/testCreateReviews")
+    public void testCreateReviews() {
         User user = userService.getByUsername("movavi");
         User user2 = userService.getByUsername("denis");
         Product product = productService.getById(1);

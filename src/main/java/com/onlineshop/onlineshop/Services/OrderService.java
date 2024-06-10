@@ -1,10 +1,17 @@
 package com.onlineshop.onlineshop.Services;
 
+import com.onlineshop.onlineshop.Exceptions.CustomExceptions.InsufficientFundsException;
+import com.onlineshop.onlineshop.Exceptions.CustomExceptions.ResourceNotFoundException;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderCreateDTO;
+import com.onlineshop.onlineshop.Models.DTO.Order.OrderItemCreateDTO;
 import com.onlineshop.onlineshop.Models.DTO.Order.OrderViewDTO;
-import com.onlineshop.onlineshop.Models.DTO.OrderItem.OrderItemCreateDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.*;
-import com.onlineshop.onlineshop.Models.Products.Product;
+import com.onlineshop.onlineshop.Models.DTO.Vk.ApiResponse;
+import com.onlineshop.onlineshop.Models.Database.Order.Order;
+import com.onlineshop.onlineshop.Models.Database.Order.OrderItem;
+import com.onlineshop.onlineshop.Models.Database.Order.PaymentMethod;
+import com.onlineshop.onlineshop.Models.Database.Order.Status;
+import com.onlineshop.onlineshop.Models.Database.Product.Product;
+import com.onlineshop.onlineshop.Models.Database.User.User;
 import com.onlineshop.onlineshop.Repositories.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -12,12 +19,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,8 +32,9 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class OrderService {
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -35,25 +43,24 @@ public class OrderService {
     private StatusRepository statusRepository;
     @Autowired
     private OrderItemRepository orderItemRepository;
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
 
-    public List<OrderViewDTO> create(OrderCreateDTO orderCreateDTO){
+    public ApiResponse create(OrderCreateDTO orderCreateDTO) throws Exception {
         Order order = new Order(orderCreateDTO);
         order.setCreationDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
 
-        Status status = statusRepository.findById(1).orElseThrow();
+        Status status = statusRepository.findById(1).orElseThrow(() -> new Exception("Не удалось создать заказ"));
         order.setStatus(status);
 
         order = orderRepository.save(order);
 
         List<OrderItem> orderItems = new ArrayList<>();
-        for (OrderItemCreateDTO orderItemCreateDTO: orderCreateDTO.getOrderItems()){
-            //logger.info("ALL OK");
-            Product product = productRepository.findById(orderItemCreateDTO.getProductId()).orElseThrow();
+        for (OrderItemCreateDTO orderItemCreateDTO : orderCreateDTO.getOrderItems()) {
+            Product product = productRepository.findById(orderItemCreateDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Продукт с ID=" + orderItemCreateDTO.getProductId() + " не найден"));
+//            if (product.getStoreList().s)
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
@@ -66,18 +73,16 @@ public class OrderService {
         orderRepository.save(order);
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Пользователь с именем " + userDetails.getUsername() + " не найден"));
 
         PaymentMethod paymentMethod = new PaymentMethod(orderCreateDTO.getPaymentMethod());
-        if (paymentMethod.getId() == 2){
+        if (paymentMethod.getId() == 2) {
             if (user.getDeposit() >= orderCreateDTO.getTotalAmount()) {
                 user.setDeposit(user.getDeposit() - orderCreateDTO.getTotalAmount());
                 status = statusRepository.findById(5).orElseThrow();
                 order.setStatus(status);
-            }
-            else{
-                status = statusRepository.findById(2).orElseThrow();
-                order.setStatus(status);
+            } else {
+                throw new InsufficientFundsException("Пополните баланс для совершения заказа.");
             }
         }
         orderRepository.save(order);
@@ -87,24 +92,13 @@ public class OrderService {
 
         List<Order> orders = orderRepository.findAll();
 
-        return orderRepository.findAll().stream().map(OrderViewDTO::new).toList();
+//        return orderRepository.findAll().stream().map(OrderViewDTO::new).toList();
+        return new ApiResponse(true, "Заказ успешно создан.") {};
     }
 
-    public Order getById(int id){
-        return null;
-    }
-
-    public List<Order> getAll(){
-        return orderRepository.findAll();
-    }
-
-    public Status getStatusById(int statusId){
-        return statusRepository.findById(statusId).orElseThrow();
-    }
-
-    public List<Order> getByUsername(String username){
+    public List<Order> getByUsername(String username) {
         Optional<User> findUser = userRepository.findByUsername(username);
-        User user = findUser.orElseThrow();
+        User user = findUser.orElseThrow(() -> new UsernameNotFoundException("Пользователь с именем " + username + "не найден"));
         return user.getOrderList().stream().sorted((o1, o2) -> o2.getCreationDate().compareTo(o1.getCreationDate())).collect(Collectors.toList());
     }
 }

@@ -1,7 +1,6 @@
 package com.onlineshop.onlineshop.Models.DTO.Store;
 
-import com.onlineshop.onlineshop.Models.DTO.AddressNestedDTO;
-import com.onlineshop.onlineshop.Models.EverythingElse.Store;
+import com.onlineshop.onlineshop.Models.Database.Store.Store;
 
 public class StoreNestedDTO {
     private int id;
