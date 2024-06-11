@@ -86,6 +86,7 @@ public class AuthService{
                     Optional<User> findUser = userService.getByVkId(request.getVkId());
                     isVk = true;
                     if (findUser.isEmpty()) throw new UsernameNotFoundException("Пользователь с таким vkId не найден.");
+                    else user = findUser.get();
                 } else {
                     try{
                         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
