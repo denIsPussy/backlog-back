@@ -170,9 +170,8 @@ public class UserService implements UserDetailsService {
         return;
     }
 
-    public User getByVkId(int vkId) {
-        Optional<User> optUser = userRepository.findByVkId(vkId);
-        return optUser.orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+    public Optional<User> getByVkId(int vkId) {
+        return userRepository.findByVkId(vkId);
     }
 
     public ApiResponse settingNotifications(UpdateSettingsDTO updateSettingsDTO) throws Exception {

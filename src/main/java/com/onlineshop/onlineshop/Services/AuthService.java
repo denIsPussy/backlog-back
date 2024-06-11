@@ -28,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -56,8 +57,8 @@ public class AuthService{
     public CompletableFuture<ApiResponse> exchangeAndRetrieveProfile(String silentToken, String uuid) {
         return apiService.exchangeSilentAuthToken(silentToken, uuid)
                 .thenCompose(vkApiResponse -> {
-                    User user = userService.getByVkId(vkApiResponse.getResponse().getUserId());
-                    if (user != null) {
+                    Optional<User> user = userService.getByVkId(vkApiResponse.getResponse().getUserId());
+                    if (user.isPresent()) {
                         return authenticateUser(new SignInDTO(vkApiResponse.getResponse().getUserId()));
                     }
                     return apiService.getProfileInfo(vkApiResponse.getResponse().getAccessToken())
@@ -82,9 +83,9 @@ public class AuthService{
                 User user;
                 boolean isVk = false;
                 if (request.getVkId() != 0) {
-                    user = userService.getByVkId(request.getVkId());
+                    Optional<User> findUser = userService.getByVkId(request.getVkId());
                     isVk = true;
-                    if (user == null) throw new UsernameNotFoundException("Пользователь с таким vkId не найден.");
+                    if (findUser.isEmpty()) throw new UsernameNotFoundException("Пользователь с таким vkId не найден.");
                 } else {
                     try{
                         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
