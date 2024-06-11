@@ -47,6 +47,9 @@ public class UserService implements UserDetailsService {
         if (userRepository.findByUsername(signUpDTO.getUsername()).isPresent()) {
             throw new RegistrationFailureException("Пользователь с таким логином уже существует");
         }
+        else if (userRepository.findByEmail(signUpDTO.getEmail()) != null){
+            throw new RegistrationFailureException("Пользователь с такой почтой уже существует");
+        }
         if (signUpDTO.getVkId() != 0) {
             newUser.setVkId(signUpDTO.getVkId());
             newUser.setTwoFactorEnabled(false);
@@ -60,15 +63,15 @@ public class UserService implements UserDetailsService {
         userRepository.save(newUser);
     }
 
-    public ShoppingCart getShopCartByUsername(String username){
+    public ShoppingCart getShopCartByUsername(String username) throws Exception {
         Optional<User> findUser = userRepository.findByUsername(username);
-        User user = findUser.orElseThrow(() -> new UsernameNotFoundException("Не удалось загрузить данные корзины"));
+        User user = findUser.orElseThrow(() -> new Exception("Не удалось загрузить данные корзины"));
         return user.getShoppingCart();
     }
 
-    public List<Order> getOrders(String username){
+    public List<Order> getOrders(String username) throws Exception {
         Optional<User> findUser = userRepository.findByUsername(username);
-        User user = findUser.orElseThrow(() -> new UsernameNotFoundException("Не удалось загрузить заказы"));
+        User user = findUser.orElseThrow(() -> new Exception("Не удалось загрузить заказы"));
         return user.getOrderList();
     }
 
@@ -87,13 +90,13 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User getByUsername(String username){
+    public User getByUsername(String username) throws Exception {
         try{
             Optional<User> optUser = userRepository.findByUsername(username);
             return optUser.orElseThrow();
         }
         catch (Exception e){
-            return null;
+            throw new Exception("Произошла ошибка. Попробуйте позже.");
         }
     }
 
@@ -188,7 +191,7 @@ public class UserService implements UserDetailsService {
         throw new InvalidRequestException("Неверный пароль");
     }
 
-    public ApiResponse containsInCart(int productId) {
+    public ApiResponse containsInCart(int productId) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = getByUsername(userDetails.getUsername());
         boolean isContain = user.getShoppingCart().getCartItems().stream()
@@ -200,16 +203,23 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ApiResponse checkingForReview(int productId) {
+    public ApiResponse checkingForReview(int productId) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = getByUsername(userDetails.getUsername());
         Product product = productService.getById(productId);
         List<Review> reviews = product.getReviewList();
-        Review review = reviews.stream().filter(item -> item.getUser().getId() == user.getId()).findFirst().orElseThrow();
-        return new ApiResponse(true, String.valueOf(review.getId())){};
+        Optional<Review> optionalReview = reviews.stream()
+                .filter(item -> item.getUser().getId() == user.getId())
+                .findFirst();
+
+        if (optionalReview.isPresent()) {
+            return new ApiResponse(true, String.valueOf(optionalReview.get().getId())){};
+        } else {
+            return new ApiResponse(true, "0"){};
+        }
     }
 
-    public ApiResponse topUpDeposit(int amount) {
+    public ApiResponse topUpDeposit(int amount) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = getByUsername(userDetails.getUsername());
         if (user == null){
@@ -217,5 +227,13 @@ public class UserService implements UserDetailsService {
         }
         user.setDeposit(user.getDeposit() + amount);
         return new ApiResponse(true,"Баланс пополнен"){};
+    }
+
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 }

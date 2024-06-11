@@ -8,12 +8,15 @@ public class UserTokenDTO extends ApiResponse {
     private String username;
     @JsonProperty("isChildModeEnabled")
     private boolean isChildModeEnabled;
+    @JsonProperty("isVk")
+    private boolean isVk;
 
-    public UserTokenDTO(String token, String username, boolean success, String message, boolean isChildModeEnabled) {
+    public UserTokenDTO(String token, String username, boolean success, String message, boolean isChildModeEnabled, boolean isVk) {
         super(success, message);
         this.token = token;
         this.username = username;
         this.isChildModeEnabled = isChildModeEnabled;
+        this.isVk = isVk;
     }
 
     public String getToken() {
@@ -38,5 +41,13 @@ public class UserTokenDTO extends ApiResponse {
 
     public void setChildModeEnabled(boolean childModeEnabled) {
         isChildModeEnabled = childModeEnabled;
+    }
+
+    public boolean isVk() {
+        return isVk;
+    }
+
+    public void setVk(boolean vk) {
+        isVk = vk;
     }
 }

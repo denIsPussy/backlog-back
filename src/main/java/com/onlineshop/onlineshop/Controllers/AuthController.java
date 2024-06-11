@@ -19,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
@@ -65,8 +66,9 @@ public class AuthController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<ApiResponse> resetPassword() throws Exception {
-        return ResponseEntity.ok(authService.resetPassword());
+    public ResponseEntity<ApiResponse> resetPassword(@RequestParam String email) throws Exception {
+        logger.info("check");
+        return ResponseEntity.ok(authService.resetPassword(email));
     }
 
     @PostMapping("/authenticate")
@@ -76,8 +78,6 @@ public class AuthController {
                 .exceptionally(e -> {
                     Throwable cause = e.getCause();
                     if (cause instanceof AuthenticationFailureException) {
-                        logger.info("Username from request: {}",
-                                request.getUsername());
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, cause.getMessage()) {
                         });
                     } else {

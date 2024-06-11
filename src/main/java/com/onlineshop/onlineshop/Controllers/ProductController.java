@@ -5,6 +5,7 @@ import com.onlineshop.onlineshop.Models.DTO.Product.CategoryCompositeDTO;
 import com.onlineshop.onlineshop.Models.DTO.Product.ProductViewDTO;
 import com.onlineshop.onlineshop.Models.DTO.Product.ReviewCreateDTO;
 import com.onlineshop.onlineshop.Models.DTO.Product.ReviewDTO;
+import com.onlineshop.onlineshop.Models.DTO.Vk.ApiResponse;
 import com.onlineshop.onlineshop.Models.Database.User.User;
 import com.onlineshop.onlineshop.Models.Database.Product.Product;
 import com.onlineshop.onlineshop.Models.Database.Product.Review;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -33,14 +35,17 @@ public class ProductController {
         return productService.getReviewsByProductId(productId).stream().map(ReviewDTO::new).toList();
     }
 
-    @GetMapping(path = "/byRating")
-    public List<ProductViewDTO> filterByRating(@RequestParam String rating) {
-        return null;
-    }
-
-    @GetMapping(path = "/byPrice")
-    public List<ProductViewDTO> filterByPrice(@RequestParam String price) {
-        return null;
+    @GetMapping(path = "/sortByPrice/{categoryId}")
+    public Page<ProductViewDTO> filterByCategory(
+            @PathVariable int categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "price") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return productService.filterByCategory(categoryId, pageable).map(ProductViewDTO::new);
     }
 
     @GetMapping(path = "/byCategory/{categoryId}")
@@ -56,9 +61,17 @@ public class ProductController {
         return productService.getCategories().stream().map(CategoryCompositeDTO::new).toList();
     }
 
-    @GetMapping(path = "/search")
-    public List<ProductViewDTO> search(@RequestParam String name) {
-        return null;
+    @GetMapping(path = "/search/{categoryId}")
+    public Page<ProductViewDTO> search(
+            @PathVariable int categoryId,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "price") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sortBy));
+        return productService.searchByCategoryAndName(categoryId, name, pageable).map(ProductViewDTO::new);
     }
 
     @GetMapping(path = "/get/{productId}")
@@ -67,24 +80,24 @@ public class ProductController {
     }
 
     @PostMapping("/createReview")
-    public List<ReviewDTO> createReview(@RequestBody ReviewCreateDTO reviewDTO) {
+    public ApiResponse createReview(@RequestBody ReviewCreateDTO reviewDTO) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(userDetails.getUsername());
         Review newReview = new Review(reviewDTO);
         Product product = productService.getById(reviewDTO.getProductId());
         newReview.setProduct(product);
         newReview.setUser(user);
-        return productService.createReview(newReview).stream().map(ReviewDTO::new).toList();
+        return productService.createReview(newReview);
     }
 
     @PutMapping("/updateReview")
-    public List<ReviewDTO> updateReview(@RequestBody ReviewDTO reviewDTO) throws ResourceNotFoundException {
-        return productService.updateReview(new Review(reviewDTO)).stream().map(ReviewDTO::new).toList();
+    public ApiResponse updateReview(@RequestBody ReviewDTO reviewDTO) throws ResourceNotFoundException {
+        return productService.updateReview(new Review(reviewDTO));
     }
 
     @DeleteMapping("/deleteReview/{reviewId}")
-    public List<ReviewDTO> deleteReview(@PathVariable int reviewId) throws ResourceNotFoundException {
-        return productService.deleteReview(reviewId).stream().map(ReviewDTO::new).toList();
+    public ApiResponse deleteReview(@PathVariable int reviewId) throws ResourceNotFoundException {
+        return productService.deleteReview(reviewId);
     }
 
     @GetMapping(path = "/test")
@@ -93,7 +106,7 @@ public class ProductController {
     }
 
     @GetMapping(path = "/testCreateReviews")
-    public void testCreateReviews() {
+    public void testCreateReviews() throws Exception {
         User user = userService.getByUsername("movavi");
         User user2 = userService.getByUsername("denis");
         Product product = productService.getById(1);

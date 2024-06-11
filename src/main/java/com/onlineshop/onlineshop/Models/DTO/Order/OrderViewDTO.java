@@ -17,6 +17,7 @@ public class OrderViewDTO {
     private float totalAmount;
     private String creationDate;
     private String completionDate;
+    private String deliveryAddress;
     private Status status;
     private PaymentMethod paymentMethod;
     private ShippingMethod shippingMethod;
@@ -33,6 +34,7 @@ public class OrderViewDTO {
         this.id = order.getId();
         this.totalAmount = order.getTotalAmount();
         this.creationDate = order.getCreationDate().toString();
+        this.deliveryAddress = order.getDeliveryAddress();
         this.completionDate = order.getCompletionDate() != null ? order.getCompletionDate().toString() : null;
         this.status = order.getStatus();
         this.paymentMethod = order.getPaymentMethod();
@@ -75,5 +77,9 @@ public class OrderViewDTO {
 
     public StoreNestedDTO getStore() {
         return store;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
     }
 }

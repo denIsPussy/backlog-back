@@ -21,6 +21,9 @@ public class Order {
     @NotNull
     private float totalAmount;
 
+    @Column(name = "deliveryAddress")
+    private String deliveryAddress;
+
     @Column(name = "creationDate")
     @NotNull
     private LocalDateTime creationDate;
@@ -57,6 +60,7 @@ public class Order {
         //this.creationDate = orderViewDTO.getCreationDate();
         //this.completionDate = orderViewDTO.getCompletionDate();
         this.status = orderViewDTO.getStatus();
+        this.deliveryAddress = orderViewDTO.getDeliveryAddress();
         this.paymentMethod = orderViewDTO.getPaymentMethod();
         this.shippingMethod = orderViewDTO.getShippingMethod();
         this.orderItems = orderViewDTO.getOrderItems().stream().map(OrderItem::new).toList();
@@ -67,6 +71,7 @@ public class Order {
         this.totalAmount = orderCreateDTO.getTotalAmount();
         this.paymentMethod = new PaymentMethod(orderCreateDTO.getPaymentMethod());
         this.shippingMethod = new ShippingMethod(orderCreateDTO.getShippingMethod());
+        this.deliveryAddress = orderCreateDTO.getDeliveryAddress();
         //this.orderItems = orderCreateDTO.getOrderItems().stream().map(OrderItem::new).toList();
     }
 
@@ -148,5 +153,13 @@ public class Order {
 
     public void setStore(Store store) {
         this.store = store;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
     }
 }

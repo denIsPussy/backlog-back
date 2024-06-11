@@ -6,6 +6,7 @@ import java.util.List;
 
 public class OrderCreateDTO {
     private float totalAmount;
+    private String deliveryAddress;
     //private String creationDate;
     private PaymentMethodCompositeDTO paymentMethod;
     private ShippingMethodCompositeDTO shippingMethod;
@@ -37,5 +38,9 @@ public class OrderCreateDTO {
 
     public StoreNestedDTO getStore() {
         return store;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
     }
 }

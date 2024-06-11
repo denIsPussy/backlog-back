@@ -1,6 +1,8 @@
 package com.onlineshop.onlineshop.Services;
 
+import com.jayway.jsonpath.JsonPath;
 import com.onlineshop.onlineshop.Exceptions.CustomExceptions.ResourceNotFoundException;
+import com.onlineshop.onlineshop.Models.DTO.Vk.ApiResponse;
 import com.onlineshop.onlineshop.Models.Database.Product.Category;
 import com.onlineshop.onlineshop.Models.Database.Product.Product;
 import com.onlineshop.onlineshop.Models.Database.Product.Review;
@@ -16,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -45,26 +48,26 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public List<Review> createReview(Review review) {
+    public ApiResponse createReview(Review review) {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         review.setCreatedAt(now);
         reviewRepository.save(review);
         reviewRepository.flush();
         updateProductRating(review.getProduct().getId());
-        return reviewRepository.findAll();
+        return new ApiResponse(true, "Отзыв добавлен"){};
     }
 
-    public List<Review> deleteReview(int reviewId) throws ResourceNotFoundException {
+    public ApiResponse deleteReview(int reviewId) throws ResourceNotFoundException {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Не найден отзыв с id " + reviewId));
         int productId = review.getProduct().getId();
         reviewRepository.delete(review);
         reviewRepository.flush();
         updateProductRating(productId);
-        return reviewRepository.findAll();
+        return new ApiResponse(true, "Отзыв удален"){};
     }
 
-    public List<Review> updateReview(Review updReview) throws ResourceNotFoundException {
+    public ApiResponse updateReview(Review updReview) throws ResourceNotFoundException {
         Review review = reviewRepository.findById(updReview.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Не найден отзыв с id " + updReview.getId()));
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
@@ -75,7 +78,7 @@ public class ProductService {
         reviewRepository.save(review);
         reviewRepository.flush();
         updateProductRating(review.getProduct().getId());
-        return reviewRepository.findAll();
+        return new ApiResponse(true, "Отзыв обновлен"){};
     }
 
     public List<Review> getReviewsByProductId(int productId) {
@@ -100,18 +103,6 @@ public class ProductService {
 
     public Product getById(int productId){
         return productRepository.findById(productId).orElseThrow();
-    }
-
-    public List<Product> filterByRating(String rating){
-        return null;
-    }
-
-    public List<Product> filterByPrice(String price){
-        return null;
-    }
-
-    public List<Product> search(String name){
-        return null;
     }
 
     public void test(){
@@ -148,5 +139,9 @@ public class ProductService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Page<Product> searchByCategoryAndName(int categoryId, String name, Pageable pageable) {
+        return productRepository.findByCategoryAndNameContainingIgnoreCase(categoryId, name, pageable);
     }
 }

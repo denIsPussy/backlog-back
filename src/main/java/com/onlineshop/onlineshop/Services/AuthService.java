@@ -80,9 +80,10 @@ public class AuthService{
             try {
                 UserDetails userDetails;
                 User user;
-
+                boolean isVk = false;
                 if (request.getVkId() != 0) {
                     user = userService.getByVkId(request.getVkId());
+                    isVk = true;
                     if (user == null) throw new UsernameNotFoundException("Пользователь с таким vkId не найден.");
                 } else {
                     try{
@@ -98,7 +99,7 @@ public class AuthService{
                     }
                 }
                 userDetails = userService.loadUserByUsername(user.getUsername());
-                return new UserTokenDTO(jwtUtil.generateToken(userDetails), user.getUsername(), true, "token", user.isChildModeEnabled());
+                return new UserTokenDTO(jwtUtil.generateToken(userDetails), user.getUsername(), true, "token", user.isChildModeEnabled(), isVk);
             } catch (Exception e) {
                 throw new CompletionException(new AuthenticationFailureException(e.getMessage()));
             }
@@ -114,7 +115,7 @@ public class AuthService{
         try {
             if (verify2FACode(twoFactorCodeDTO.getCode(), user)) {
                 UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
-                return new UserTokenDTO(jwtUtil.generateToken(userDetails), user.getUsername(), true, "2FA код успешно подтвержден.", user.isChildModeEnabled());
+                return new UserTokenDTO(jwtUtil.generateToken(userDetails), user.getUsername(), true, "2FA код успешно подтвержден.", user.isChildModeEnabled(), user.getVkId() != null);
             } else {
                 throw new AuthenticationFailureException("Неверный 2FA код.");
             }
@@ -144,29 +145,33 @@ public class AuthService{
         }
     }
 
-    public ApiResponse resetPassword() throws Exception {
+    public ApiResponse resetPassword(String email) throws Exception {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-            User user = userService.getByUsername(userDetails.getUsername());
+            logger.info("Start found user");
+            logger.info("email is " + email);
+            User user = userService.getByEmail(email);
             if (user == null) {
                 throw new UsernameNotFoundException("Пользователь не найден.");
             }
-
+            logger.info("User founded");
             String newPassword = PasswordGenerator.generatePassword(8);
             if (newPassword.isEmpty()) {
                 throw new IllegalStateException("Не удалось сгенерировать новый пароль.");
             }
 
+            logger.info("New password is " + newPassword);
+
             user.setPassword(passwordEncoder.encode(newPassword));
             userService.update(user);
+            logger.info("New password set");
 
-            emailService.sendSimpleMessage(user.getEmail(), "Сброс пароля", "Ваш новый пароль: " + newPassword + ". Вы можете сменить пароль в личном профиле.");
+            emailService.sendSimpleMessage(email, "Сброс пароля", "Ваш новый пароль: " + newPassword + ". Вы можете сменить пароль в личном профиле.");
             return new ApiResponse(true, "Пароль успешно сброшен. Ожидайте уведомления на почту"){};
         } catch (UsernameNotFoundException | IllegalStateException e) {
             throw e;
         } catch (Exception e) {
-            throw new Exception("Произошла ошибка при сбросе пароля");
+//            throw new Exception("Произошла ошибка при сбросе пароля");
+            throw e;
         }
     }
 }

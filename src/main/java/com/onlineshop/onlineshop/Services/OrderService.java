@@ -74,23 +74,19 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemCreateDTO orderItemCreateDTO : orderCreateDTO.getOrderItems()) {
             Product product = productRepository.findById(orderItemCreateDTO.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Продукт с ID=" + orderItemCreateDTO.getProductId() + " не найден"));
-            logger.info("Найден товар из корзины");
             Optional<StoreItem> storeItemOptional = product.getStoreList().stream()
                     .filter(item -> item.getStore().getId() == orderCreateDTO.getStore().getId() && item.getProduct().getId() == orderItemCreateDTO.getProductId())
                     .findFirst();
 
             if (storeItemOptional.isPresent()) {
-                logger.info("Товар найден в выбранном магазине");
                 StoreItem storeItem = storeItemOptional.get();
                 if (storeItem.getQuantity() >= orderItemCreateDTO.getQuantity()) {
-                    logger.info("Товар приобретен в магазине(уменьшено кол-во)");
                     storeItem.setQuantity(storeItem.getQuantity() - orderItemCreateDTO.getQuantity());
                     storeItemRepository.save(storeItem);
                 } else {
                     throw new OutOfStockException("В выбраном магазине отсутствует данное количество товара: " + product.getName());
                 }
             } else {
-                logger.info("Товар не найден в выбранном магазине");
                 throw new ResourceNotFoundException("Товар " + product.getName() + " не найден в выбранном магазине");
             }
 
@@ -103,8 +99,10 @@ public class OrderService {
         orderItemRepository.saveAll(orderItems);
 
         order.setOrderItems(orderItems);
-        order.setStore(store);
-        orderRepository.save(order);
+        if (orderCreateDTO.getShippingMethod().getDescription().equals("Самовывозом")){
+            order.setStore(store);
+            orderRepository.save(order);
+        }
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Пользователь с именем " + userDetails.getUsername() + " не найден"));
@@ -118,6 +116,10 @@ public class OrderService {
             } else {
                 throw new InsufficientFundsException("Пополните баланс для совершения заказа.");
             }
+        }
+        else{
+            status = statusRepository.findById(5).orElseThrow();
+            order.setStatus(status);
         }
         orderRepository.save(order);
 

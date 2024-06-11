@@ -55,40 +55,51 @@ public class UserController {
     }
 
     @GetMapping(path = "/byUsername")
-    public List<OrderViewDTO> getByUsername(@RequestParam String username) {
+    public List<OrderViewDTO> getByUsername(@RequestParam String username) throws Exception {
         return userService.getOrders(username).stream().map(OrderViewDTO::new).toList();
     }
 
     @GetMapping(path = "/checkingForReview/{productId}")
-    public ApiResponse checkingForReview(@PathVariable int productId) {
+    public ApiResponse checkingForReview(@PathVariable int productId) throws Exception {
         return userService.checkingForReview(productId);
     }
 
     @GetMapping(path = "/getShopCart")
-    public ShoppingCartDTO getShopCart() {
+    public ShoppingCartDTO getShopCart() throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ShoppingCartDTO(userService.getShopCartByUsername(userDetails.getUsername()));
     }
 
+    @GetMapping(path = "/resetUser")
+    public void test() throws Exception {
+        List<User> users = userService.getAll();
+        for (User user : users){
+            if (user.getVkId() != 610502189){
+                user.setVkId(0);
+                userService.update(user);
+            }
+        }
+    }
+
     @PostMapping(path = "/topUpDeposit")
-    public ApiResponse topUpDeposit(@RequestParam int amount) {
+    public ApiResponse topUpDeposit(@RequestParam int amount) throws Exception {
         return userService.topUpDeposit(amount);
     }
 
     @GetMapping(path = "/containsInCart/{productId}")
-    public ApiResponse containsInCart(@PathVariable int productId) {
+    public ApiResponse containsInCart(@PathVariable int productId) throws Exception {
         return userService.containsInCart(productId);
     }
 
     @GetMapping(path = "/deposit")
-    public float getDeposit() {
+    public float getDeposit() throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(userDetails.getUsername());
         return user.getDeposit();
     }
 
     @GetMapping(path = "/getUserInfo")
-    public UserViewDTO getUserInfo() {
+    public UserViewDTO getUserInfo() throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(userDetails.getUsername());
         return new UserViewDTO(user);

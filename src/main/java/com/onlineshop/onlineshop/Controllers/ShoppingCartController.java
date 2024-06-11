@@ -1,5 +1,6 @@
 package com.onlineshop.onlineshop.Controllers;
 
+import com.onlineshop.onlineshop.Models.DTO.Vk.ApiResponse;
 import com.onlineshop.onlineshop.Models.Database.ShoppingCart.CartItem;
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.CartItemViewDTO;
 import com.onlineshop.onlineshop.Models.DTO.ShopCart.ShoppingCartDTO;
@@ -28,50 +29,23 @@ public class ShoppingCartController {
     private UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-    @PostMapping(path="/clear")
-    public void clear(){
-
-    }
     @PostMapping(path="/addToCart")
-    public ShoppingCartDTO addToCart(@RequestBody CartItemViewDTO cartItemViewDTO){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(userDetails.getUsername());
-        ShoppingCart shoppCart = user.getShoppingCart();
-        Product product = productService.getById(cartItemViewDTO.getProduct().getId());
-        CartItem cartItem = new CartItem();
-        cartItem.setProduct(product);
-        cartItem.setCart(shoppCart);
-        cartItem.setQuantity(cartItemViewDTO.getQuantity());
-        logger.info("CONTROLLER Quantity of the product in the cart item: {}", cartItem.getQuantity());
-        logger.info("CONTROLLER Quantity in the DTO: {}", cartItemViewDTO.getQuantity());
-        ShoppingCart newCart = shoppingCartService.addToCart(cartItem);
-        return new ShoppingCartDTO(newCart);
+    public ApiResponse addToCart(@RequestBody CartItemViewDTO cartItemViewDTO) throws Exception {
+        return shoppingCartService.addToCart(cartItemViewDTO);
     }
 
     @DeleteMapping(path="/removeFromCart/{productId}")
-    public ShoppingCartDTO removeFromCart(@PathVariable int productId){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(userDetails.getUsername());
-        ShoppingCart shoppCart = user.getShoppingCart();
-        ShoppingCart newCart = shoppingCartService.removeFromCart(shoppCart.getId(), productId);
-        return new ShoppingCartDTO(newCart);
+    public ApiResponse removeFromCart(@PathVariable int productId) throws Exception {
+        return shoppingCartService.removeFromCart(productId);
     }
 
     @PostMapping(path="/reduceProductQuantityInCart/{productId}")
-    public ShoppingCartDTO reduceProductQuantityInCart(@PathVariable int productId){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(userDetails.getUsername());
-        ShoppingCart shoppCart = user.getShoppingCart();
-        return new ShoppingCartDTO(shoppingCartService.reduceProductQuantity(shoppCart, productId));
-        //return new ShoppingCartDTO(newCart);
+    public ApiResponse reduceProductQuantityInCart(@PathVariable int productId) throws Exception {
+        return shoppingCartService.reduceProductQuantity(productId);
     }
 
     @PostMapping(path="/increaseProductQuantityInCart/{productId}")
-    public ShoppingCartDTO increaseProductQuantityInCart(@PathVariable int productId){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.getByUsername(userDetails.getUsername());
-        ShoppingCart shoppCart = user.getShoppingCart();
-        return new ShoppingCartDTO(shoppingCartService.increaseProductQuantity(shoppCart, productId));
-        //return new ShoppingCartDTO(newCart);
+    public ApiResponse increaseProductQuantityInCart(@PathVariable int productId) throws Exception {
+        return shoppingCartService.increaseProductQuantity(productId);
     }
 }

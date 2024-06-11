@@ -31,7 +31,7 @@ public class NotificationService {
         return notificationRepository.findById(id).orElseThrow();
     }
 
-    public List<Notification> getByUserId(int userId) {
+    public List<Notification> getByUserId(int userId) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(userDetails.getUsername());
         if (user == null) {
@@ -51,7 +51,7 @@ public class NotificationService {
     }
 
 
-    public List<Notification> read(int notificationId) {
+    public List<Notification> read(int notificationId) throws Exception {
         Notification notification = getById(notificationId);
         if (notification == null) {
             throw new ResourceNotFoundException("Уведомление не найдено.");
@@ -68,7 +68,7 @@ public class NotificationService {
         return getByUserId(user.getId());
     }
 
-    public List<Notification> getNewByUserId(int userId) {
+    public List<Notification> getNewByUserId(int userId) throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(userDetails.getUsername());
         if (user == null) {

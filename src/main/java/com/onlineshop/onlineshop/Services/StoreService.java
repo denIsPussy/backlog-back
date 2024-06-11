@@ -29,11 +29,9 @@ public class StoreService {
     private UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-    public List<Store> getByCart() {
+    public List<Store> getByCart() throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        logger.info("СЮДААААААА-2");
         User user = userService.getByUsername(userDetails.getUsername());
-        logger.info("СЮДААААААА0");
         List<Store> storeList = storeRepository.findAll();
         ShoppingCart cart = user.getShoppingCart();
         List<Set<Store>> storeSets = cart.getCartItems().stream()
@@ -41,18 +39,14 @@ public class StoreService {
                         .map(StoreItem::getStore)
                         .collect(Collectors.toSet()))
                 .toList();
-        logger.info("СЮДААААААА1");
         if (storeSets.isEmpty()) {
             throw new OutOfStockException("Все товары в корзине отсутствуют в наличии.");
         }
-        logger.info("СЮДААААААА2");
 
-        // Пересечение всех множеств магазинов
         Set<Store> commonStores = new HashSet<>(storeSets.get(0));
         storeSets.forEach(commonStores::retainAll);
 
         if (commonStores.isEmpty()){
-            logger.info("СЮДААААААА3");
             throw new OutOfStockException("Не найден магазин, способный предоставить все выбранные товары.");
         }
 

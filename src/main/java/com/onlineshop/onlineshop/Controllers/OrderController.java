@@ -45,8 +45,7 @@ public class OrderController {
     }
 
     @GetMapping(path = "/getStore")
-    public List<StoreNestedDTO> getStore() {
-        logger.info("СЮДААААААА-1");
+    public List<StoreNestedDTO> getStore() throws Exception {
         return storeService.getByCart().stream().map(StoreNestedDTO::new).toList();
     }
 

@@ -26,26 +26,26 @@ public class NotificationController {
     private NotificationService notificationService;
 
     @GetMapping("/")
-    public List<NotificationDTO> getByUser() {
+    public List<NotificationDTO> getByUser() throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(userDetails.getUsername());
         return notificationService.getByUserId(user.getId()).stream().map(NotificationDTO::new).toList();
     }
 
     @GetMapping("/new")
-    public List<NotificationDTO> getNewByUser() {
+    public List<NotificationDTO> getNewByUser() throws Exception {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getByUsername(userDetails.getUsername());
         return notificationService.getNewByUserId(user.getId()).stream().map(NotificationDTO::new).toList();
     }
 
     @PostMapping("/read/{notificationId}")
-    public List<NotificationDTO> read(@PathVariable int notificationId) {
+    public List<NotificationDTO> read(@PathVariable int notificationId) throws Exception {
         return notificationService.read(notificationId).stream().map(NotificationDTO::new).toList();
     }
 
     @GetMapping("/generate-notification")
-    public NotificationDTO generateNotification() {
+    public NotificationDTO generateNotification() throws Exception {
         User user = userService.getByUsername("movavi");
         if (user == null) {
             throw new RuntimeException("User with ID 1 not found");
