@@ -99,10 +99,8 @@ public class OrderService {
         orderItemRepository.saveAll(orderItems);
 
         order.setOrderItems(orderItems);
-        if (orderCreateDTO.getShippingMethod().getDescription().equals("Самовывозом")){
-            order.setStore(store);
-            orderRepository.save(order);
-        }
+        order.setStore(store);
+        orderRepository.save(order);
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Пользователь с именем " + userDetails.getUsername() + " не найден"));
