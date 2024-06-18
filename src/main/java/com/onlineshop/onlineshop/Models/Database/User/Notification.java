@@ -35,8 +35,7 @@ public class Notification {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "user_id") // Это указывает, что столбец 'user_id' используется для присоединения к таблице User
-    private User user;
+    @JoinColumn(name = "user_id")     private User user;
 
     public Notification(){
 

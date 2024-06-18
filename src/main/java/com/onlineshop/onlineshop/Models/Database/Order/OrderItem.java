@@ -32,10 +32,6 @@ public class OrderItem {
         this.quantity = orderItemViewDTO.getQuantity();
     }
 
-//    public OrderItem(OrderItemCreateDTO orderItemCreateDTO){
-//        this.product = new Product(orderItemCreateDTO.getProductId());
-//        this.quantity = orderItemCreateDTO.getQuantity();
-//    }
 
     public int getId() {
         return id;

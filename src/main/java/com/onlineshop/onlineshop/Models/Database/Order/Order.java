@@ -47,8 +47,7 @@ public class Order {
     private List<OrderItem> orderItems;
 
     @ManyToOne
-    @JoinColumn(name = "store_id")  // Ссылка на магазин
-    private Store store;
+    @JoinColumn(name = "store_id")      private Store store;
 
     public Order(){
 
@@ -57,9 +56,7 @@ public class Order {
     public Order(OrderViewDTO orderViewDTO) {
         this.id = orderViewDTO.getId();
         this.totalAmount = orderViewDTO.getTotalAmount();
-        //this.creationDate = orderViewDTO.getCreationDate();
-        //this.completionDate = orderViewDTO.getCompletionDate();
-        this.status = orderViewDTO.getStatus();
+                        this.status = orderViewDTO.getStatus();
         this.deliveryAddress = orderViewDTO.getDeliveryAddress();
         this.paymentMethod = orderViewDTO.getPaymentMethod();
         this.shippingMethod = orderViewDTO.getShippingMethod();
@@ -72,8 +69,7 @@ public class Order {
         this.paymentMethod = new PaymentMethod(orderCreateDTO.getPaymentMethod());
         this.shippingMethod = new ShippingMethod(orderCreateDTO.getShippingMethod());
         this.deliveryAddress = orderCreateDTO.getDeliveryAddress();
-        //this.orderItems = orderCreateDTO.getOrderItems().stream().map(OrderItem::new).toList();
-    }
+            }
 
     public int getId() {
         return id;

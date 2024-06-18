@@ -53,9 +53,6 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviewList = new ArrayList<>();
-    //
-//    @OneToMany(mappedBy = "product")
-//    private List<CartItem> cartItems;
 
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
@@ -71,8 +68,6 @@ public class Product {
 
     public Product(ProductViewDTO productViewDTO) {
         this.id = productViewDTO.getId();
-//        this.name = productViewDTO.getName();
-//        this.price = productViewDTO.getId();
 //        this.description = productViewDTO.getDescription();
 //        this.rating = productViewDTO.getRating();
 //        this.image = productViewDTO.getImage();

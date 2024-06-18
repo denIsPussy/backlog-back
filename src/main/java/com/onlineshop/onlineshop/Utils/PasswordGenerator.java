@@ -15,19 +15,16 @@ public class PasswordGenerator {
         String mix = UPPER_CASE + LOWER_CASE + NUMBERS + SPECIAL_CHARS;
         StringBuilder password = new StringBuilder(length);
 
-        // Гарантируем, что в пароле есть хотя бы один символ из каждой категории
-        password.append(UPPER_CASE.charAt(random.nextInt(UPPER_CASE.length())));
+                password.append(UPPER_CASE.charAt(random.nextInt(UPPER_CASE.length())));
         password.append(LOWER_CASE.charAt(random.nextInt(LOWER_CASE.length())));
         password.append(NUMBERS.charAt(random.nextInt(NUMBERS.length())));
         password.append(SPECIAL_CHARS.charAt(random.nextInt(SPECIAL_CHARS.length())));
 
-        // Заполняем оставшиеся места случайными символами из общего пула
-        for (int i = password.length(); i < length; i++) {
+                for (int i = password.length(); i < length; i++) {
             password.append(mix.charAt(random.nextInt(mix.length())));
         }
 
-        // Перемешиваем символы для добавления случайности
-        return shuffleString(password.toString());
+                return shuffleString(password.toString());
     }
 
     private static String shuffleString(String string) {

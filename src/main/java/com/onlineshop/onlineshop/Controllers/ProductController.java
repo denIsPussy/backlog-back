@@ -115,16 +115,14 @@ public class ProductController {
         review1.setHeader("Невероятная производительность для геймеров");
         review1.setContent("Эта видеокарта изменила мои впечатления от игр. Теперь я могу играть в самые современные игры на ультра настройках без каких-либо подвисаний или задержек. RTX 4090 действительно стоит своих денег!");
         review1.setRating(4.8f);
-        review1.setUpdatedAt(null); // Так как отзыв не обновлялся
-        review1.setUser(user);
+        review1.setUpdatedAt(null);         review1.setUser(user);
         review1.setProduct(product);
 
         Review review2 = new Review();
         review2.setHeader("Высокая цена, но оправданное качество");
         review2.setContent("Изначально я сомневался из-за высокой стоимости, но после нескольких месяцев использования могу сказать — видеокарта стоит каждого рубля. Идеально подходит для игр, видеомонтажа и VR.");
         review2.setRating(4.7f);
-        review2.setUpdatedAt(null); // Так как отзыв не обновлялся
-        review2.setUser(user2);
+        review2.setUpdatedAt(null);         review2.setUser(user2);
         review2.setProduct(product);
 
         productService.createReview(review1);

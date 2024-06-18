@@ -83,25 +83,6 @@ public class User{
 
     }
 
-//    public User(UserViewDTO userDTO) {
-//        this.id = userDTO.getId();
-//        this.vkId = userDTO.getVkId();
-//        this.firstName = userDTO.getFirstName();
-//        this.lastName = userDTO.getLastName();
-//        this.patronymic = userDTO.getPatronymic();
-//        this.username = userDTO.getUsername();
-//        this.password = userDTO.getPassword();
-//        this.email = userDTO.getEmail();
-//        this.isTwoFactorEnabled = userDTO.isTwoFactorEnabled();
-//        this.twoFactorCode = userDTO.getTwoFactorCode();
-//        this.twoFactorExpiration = userDTO.getTwoFactorExpiration();
-//        this.deposit = userDTO.getDeposit();
-//        this.isChildModeEnabled = userDTO.isChildModeEnabled();
-//        this.areNotificationsEnabled = userDTO.isAreNotificationsEnabled();
-//        this.shoppingCart = userDTO.getShoppingCart();
-//        this.orderList = userDTO.getOrderList().stream().map(Order::new).toList();
-//        //this.notificationList = userDTO.getNotificationList().stream().map(Notification::new).toList();
-//    }
 
     public User (SignUpDTO signUpDTO) {
         this.firstName = signUpDTO.getFirstName();

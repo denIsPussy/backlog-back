@@ -27,8 +27,7 @@ public class Review {
     @Column(nullable = true)
     private LocalDateTime updatedAt;
 
-    private float rating;  // Рейтинг отзыва
-
+    private float rating;
     @Column(name="content", columnDefinition = "TEXT")
     private String content;
 

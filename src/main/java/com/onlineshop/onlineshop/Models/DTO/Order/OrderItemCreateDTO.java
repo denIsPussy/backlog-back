@@ -5,11 +5,6 @@ public class OrderItemCreateDTO {
     private int quantity;
     private int storeId;
 
-//    public OrderItemDetailDTO(OrderItem orderItem) {
-//        this.id = orderItem.getId();
-//        this.product = new ProductDetailDTO(orderItem.getProduct());
-//        this.quantity = orderItem.getQuantity();
-//    }
 
     public int getProductId() {
         return productId;

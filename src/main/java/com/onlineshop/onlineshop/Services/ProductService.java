@@ -42,8 +42,7 @@ public class ProductService {
         double averageRating = product.getReviewList().stream()
                 .mapToDouble(Review::getRating)
                 .average()
-                .orElse(0.0); // Возвращает 0.0, если отзывов нет
-
+                .orElse(0.0);
         product.setRating((float) averageRating);
         productRepository.save(product);
     }

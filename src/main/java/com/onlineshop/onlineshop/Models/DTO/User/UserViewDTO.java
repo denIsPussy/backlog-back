@@ -7,56 +7,31 @@ import com.onlineshop.onlineshop.Models.Database.User.User;
 import java.util.List;
 
 public class UserViewDTO {
-//    private int id;
-//    private Integer vkId;
     private String firstName;
     private String lastName;
     private String patronymic;
-//    private String username;
-//    private String password;
-//    private String email;
     private boolean isTwoFactorEnabled;
-//    private String twoFactorCode;
-//    private LocalDateTime twoFactorExpiration;
     private float deposit;
     @JsonProperty("isChildModeEnabled")
     private boolean isChildModeEnabled;
     private boolean areNotificationsEnabled;
-//    private ShoppingCart shoppingCart;
     private List<OrderViewDTO> orderList;
-//    private List<NotificationDTO> notificationList;
 
     public UserViewDTO(){
 
     }
 
     public UserViewDTO(User user) {
-//        this.id = user.getId();
-//        this.vkId = user.getVkId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
-//        this.username = user.getUsername();
-//        this.password = user.getPassword();
-//        this.email = user.getEmail();
         this.deposit = user.getDeposit();
         this.isTwoFactorEnabled = user.isTwoFactorEnabled();
-//        this.twoFactorCode = user.getTwoFactorCode();
-//        this.twoFactorExpiration = user.getTwoFactorExpiration();
         this.isChildModeEnabled = user.isChildModeEnabled();
         this.areNotificationsEnabled = user.isAreNotificationsEnabled();
-//        this.shoppingCart = user.getShoppingCart();
         this.orderList = user.getOrderList().stream().map(OrderViewDTO::new).toList();
-//        this.notificationList = user.getNotificationList().stream().map(NotificationDTO::new).toList();
     }
 
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public Integer getVkId() {
-//        return vkId;
-//    }
 
     public String getFirstName() {
         return firstName;

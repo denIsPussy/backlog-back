@@ -29,10 +29,8 @@ public class CartItem {
     }
 
     public CartItem(CartItemViewDTO cartItemViewDTO){
-        //this.id = cartItemViewDTO.getId();
-        this.product = new Product(cartItemViewDTO.getProduct());
-        //this.shoppingCart = new ShoppingCart(cartItemDTO.getShoppingCart());
-        this.quantity = cartItemViewDTO.getQuantity();
+                this.product = new Product(cartItemViewDTO.getProduct());
+                this.quantity = cartItemViewDTO.getQuantity();
     }
 
     public int getId() {

@@ -132,7 +132,6 @@ public class OrderService {
         shoppingCartRepository.save(shoppingCart);
         userRepository.save(user);
 
-//        return orderRepository.findAll().stream().map(OrderViewDTO::new).toList();
         return new ApiResponse(true, "Заказ успешно создан.") {};
     }
 

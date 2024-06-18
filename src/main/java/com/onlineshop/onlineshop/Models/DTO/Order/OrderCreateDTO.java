@@ -7,8 +7,7 @@ import java.util.List;
 public class OrderCreateDTO {
     private float totalAmount;
     private String deliveryAddress;
-    //private String creationDate;
-    private PaymentMethodCompositeDTO paymentMethod;
+        private PaymentMethodCompositeDTO paymentMethod;
     private ShippingMethodCompositeDTO shippingMethod;
     private List<OrderItemCreateDTO> orderItems;
     private StoreNestedDTO store;
@@ -20,9 +19,6 @@ public class OrderCreateDTO {
         return totalAmount;
     }
 
-//    public String getCreationDate() {
-//        return creationDate;
-//    }
 
     public PaymentMethodCompositeDTO getPaymentMethod() {
         return paymentMethod;

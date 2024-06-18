@@ -172,7 +172,6 @@ public class AuthService{
         } catch (UsernameNotFoundException | IllegalStateException e) {
             throw e;
         } catch (Exception e) {
-//            throw new Exception("Произошла ошибка при сбросе пароля");
             throw e;
         }
     }

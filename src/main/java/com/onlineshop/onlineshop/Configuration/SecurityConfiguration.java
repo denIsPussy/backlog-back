@@ -25,9 +25,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-//@Configuration
-//@EnableWebSecurity
-//@EnableMethodSecurity
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -49,17 +46,12 @@ public class SecurityConfiguration {
                 .cors((cors) -> cors
                         .configurationSource(corsConfigurationSource())
                 )
-                // Отключаем CSRF защиту, т.к. используем Stateless сессии
-                .csrf(AbstractHttpConfigurer::disable)
-                // Настройка правил авторизации
-                .authorizeHttpRequests(auth -> auth
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/resetPassword", "/authenticate", "/register", "/exchangeSilentAuthToken", "/notifications/**", "/verifyTwoFactorCode", "/products/**", "/cart/**", "/order/**", "/user/**").permitAll()
                         .anyRequest().authenticated())
-                // Управление сессией
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Сессии не создаются
-                // Добавление вашего фильтра и провайдера аутентификации
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))                                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider());
 
         return http.build();

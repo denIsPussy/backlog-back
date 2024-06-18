@@ -36,7 +36,6 @@ public class VkProfileInfo {
         @JsonProperty("is_closed")
         private boolean isClosed;
 
-        // Геттеры и сеттеры
 
         public int getId() {
             return id;
